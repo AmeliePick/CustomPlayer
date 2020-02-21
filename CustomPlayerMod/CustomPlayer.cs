@@ -68,7 +68,15 @@ namespace CustomPlayer_Vi
 
                 Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
-                
+                // Change the model's skin
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_HAIR, 0, 2, 2);
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_HEAD, 0, 1, 2);
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_EYES, 2, 0, 2);
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_TORSO, 1, 0, 2);
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_ACCESSORIES, 1, 0, 2);
+
+
+                GTAN.Call(Hash.SET_PED_PROP_INDEX, playerPed, 1, 2, 2, 2);
 
 
 
