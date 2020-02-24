@@ -59,49 +59,37 @@ namespace CustomPlayer_Vi
         {
             if(e.KeyCode == Keys.K && Game.Player.Character.Model != "Va")
             {
-                Player player = Game.Player;
-                
+                Player player = Game.Player;    
  
                 player.ChangeModel(new Model("Va"));
-                player.Character.Voice = "A_F_M_BEACH_01_WHITE_FULL_01";
+                player.Character.Voice = "a_f_y_business_02_white_full_01";
 
 
                 Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
+                // Change walk/standing/movement animations
+                GTAN.Call(Hash.HAS_ANIM_SET_LOADED, "move_f@multiplayer");
+
+                Wait(1000);
+                GTAN.Call(Hash.SET_PED_MOVEMENT_CLIPSET, playerPed, "move_f@multiplayer", 0.1);
+
+
                 // Change the model's skin
                 GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_HAIR, 0, 2, 2);
                 GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_HEAD, 0, 1, 2);
-                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_EYES, 2, 0, 2);
                 GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_TORSO, 1, 0, 2);
                 GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_ACCESSORIES, 1, 0, 2);
 
-
-                GTAN.Call(Hash.SET_PED_PROP_INDEX, playerPed, 1, 2, 2, 2);
-
-
-
-                // Change walk/standing/movement animations
-                GTAN.Call(Hash.HAS_ANIM_SET_LOADED, "move_f@sexy@a");
-
-                if( GTAN.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, "move_f@sexy@a") )
-                {
-                    GTAN.Call(Hash.SET_PED_MOVEMENT_CLIPSET, playerPed, "move_f@sexy@a", 0.1);
-                    
-
-                    UI.ShowSubtitle("Anim changed");
-                    Wait(1000);
-                }
-
+                // For V model the parameter PED_VARIATION_LEGS changes the lower clothes components
+                GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_LEGS, 2, 0, 2);
                 
-
-
-
 
                 UI.ShowSubtitle("Model changed, all settings was apply");
             }
             else if(e.KeyCode == Keys.K && Game.Player.Character.Model == "Va")
             {
                 Game.Player.ChangeModel(BaseModel);
+
                 UI.ShowSubtitle("Initial model was return");
             }
         }
