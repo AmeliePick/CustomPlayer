@@ -59,18 +59,13 @@ namespace CustomPlayer_Vi
         {
             if(e.KeyCode == Keys.K && Game.Player.Character.Model != "Va")
             {
-                Player player = Game.Player;    
- 
-                player.ChangeModel(new Model("Va"));
-                player.Character.Voice = "a_f_y_business_02_white_full_01";
-
+                Game.Player.ChangeModel(new Model("Va"));
 
                 Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
                 // Change walk/standing/movement animations
-                GTAN.Call(Hash.HAS_ANIM_SET_LOADED, "move_f@multiplayer");
-
-                Wait(1000);
+                GTAN.Call(Hash.REQUEST_ANIM_SET, "move_f@multiplayer");
+                Wait(1500);
                 GTAN.Call(Hash.SET_PED_MOVEMENT_CLIPSET, playerPed, "move_f@multiplayer", 0.1);
 
 
@@ -82,7 +77,10 @@ namespace CustomPlayer_Vi
 
                 // For V model the parameter PED_VARIATION_LEGS changes the lower clothes components
                 GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, (int)PedVariationData.PED_VARIATION_LEGS, 2, 0, 2);
-                
+
+
+                playerPed.Voice = "S_F_Y_HOOKER_01_WHITE_FULL_01";
+
 
                 UI.ShowSubtitle("Model changed, all settings was apply");
             }
