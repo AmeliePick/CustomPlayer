@@ -16,32 +16,31 @@ using GTA.Math;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
-
-
 using GTAN = GTA.Native.Function;
 
 
-enum PedVariationData
-{
-    PED_VARIATION_HEAD = 0,
-    PED_VARIATION_FACE = 1,
-    PED_VARIATION_HAIR = 2,
-    PED_VARIATION_TORSO = 3,
-    PED_VARIATION_LEGS = 4,
-    PED_VARIATION_HANDS = 5,
-    PED_VARIATION_FEET = 6,
-    PED_VARIATION_EYES = 7,
-    PED_VARIATION_ACCESSORIES = 8,
-    PED_VARIATION_TASKS = 9,
-    PED_VARIATION_TEXTURES = 10,
-    PED_VARIATION_TORSO2 = 11
-};
+
 
 
 namespace CustomPlayer_Vi
 {
+    enum PedVariationData
+    {
+        PED_VARIATION_HEAD = 0,
+        PED_VARIATION_FACE = 1,
+        PED_VARIATION_HAIR = 2,
+        PED_VARIATION_TORSO = 3,
+        PED_VARIATION_LEGS = 4,
+        PED_VARIATION_HANDS = 5,
+        PED_VARIATION_FEET = 6,
+        PED_VARIATION_EYES = 7,
+        PED_VARIATION_ACCESSORIES = 8,
+        PED_VARIATION_TASKS = 9,
+        PED_VARIATION_TEXTURES = 10,
+        PED_VARIATION_TORSO2 = 11
+    };
+
     public class Player_ : Script
     {
         public Player BasePlayer { private set; get; }
