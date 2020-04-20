@@ -1,0 +1,21 @@
+# .gitignore for Grand Stronghold project
+
+
+.vs/
+.vscode/
+
+CustomPlayer/obj/x64
+CustomPlayer/bin
+CustomPlayer_Vi/obj/x64
+CustomPlayer_Vi/bin
+src/Debug
+bin/
+build/
+
+
+# resource files
+*.csproj.user
+*.xml
+*.zip
+*.log
+*.txt
