@@ -22,7 +22,6 @@ using GTAN = GTA.Native.Function;
 
 
 
-
 namespace CustomPlayer
 {
     public enum PedVariationData
@@ -44,12 +43,21 @@ namespace CustomPlayer
 
     public class CustomPlayer : Script
     {
-        public Player BasePlayer { private set; get; }
-        public Model BaseModel { private set; get; }
+        SaveClass saveClass;
+        LoadClass loadClass;
+
 
 
         MenuPool modMenuPool;
         UIMenu mainMenu;
+
+        UIMenu LoadCharacterMenu;
+        List<dynamic> ListOfNames;
+        private int previousCountOfNamesList;
+        UIMenuItem EmptyLoadingListButtonInfo;
+        UIMenuListItem CharactersList;
+        UIMenuItem LoadCharacter;
+        UIMenuItem LoadDefaultPlayer;
 
         UIMenuItem saveCharacter;
         UIMenuItem customize;
@@ -64,7 +72,11 @@ namespace CustomPlayer
             mainMenu = new UIMenu("Custom Player", "Select an opinion");
             modMenuPool.Add(mainMenu);
 
-            UIMenu LoadCharacterMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current player character to a saved character.");
+
+
+            // Init buttons
+
+            SubMenuCharactersListSetup();
 
             saveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
             mainMenu.AddItem(saveCharacter);
@@ -76,19 +88,15 @@ namespace CustomPlayer
             mainMenu.AddItem(about);
 
 
+            // Init events
             mainMenu.OnItemSelect += onMainMenuItemSelect;
-
-
             KeyDown += OnKeyDown;
             Tick += OnTick;
-            
 
 
-            BasePlayer = Game.Player;
-            BaseModel = BasePlayer.Character.Model;
-
-
-            
+            // Init mod's classes
+            saveClass = new SaveClass();
+            loadClass = new LoadClass(Game.Player.Character.Model);
         }
 
         void OnTick(object sender, EventArgs e)
@@ -109,29 +117,119 @@ namespace CustomPlayer
 
         void onMainMenuItemSelect(UIMenu sender, UIMenuItem item, int index)
         {
-            if(item == saveCharacter)
+            /* In addition to updating the menu, there may be a "late" initialization of the "Load" menu. 
+             * This is due to the fact that the first time you run the script, 
+             * there may not be a file with saved characters.
+             */
+            UpdateLoadMenu();
+
+
+            if (item == saveCharacter)
             {
                 string inputText = GTA.Game.GetUserInput(WindowTitle.FMMC_KEY_TIP9N, 60);
 
-                SaveClass.SaveCharacter(inputText);
+                if(inputText != "")
+                {
+                    saveClass.SaveCharacter(inputText);
 
-                UI.ShowSubtitle("Done!");
+                    UI.ShowSubtitle("Done!");
+                }
+                else
+                    UI.ShowSubtitle("Name can not be empty!");
+
             }
             else if(item == about)
             {
                 BigMessageThread.MessageInstance.ShowSimpleShard("Custom Player",
                 "Developed by AmeliePick — https://ameliepick.ml"); 
-            }
+            } 
         }
 
 
-
-        void SaveCharacter()
+        void LoadMenuInit()
         {
+            if (EmptyLoadingListButtonInfo != null && LoadCharacterMenu.MenuItems.Count > 0)
+            {
+                LoadCharacterMenu.Clear();
+
+                EmptyLoadingListButtonInfo = null;
+            }
+
+            CharactersList = new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character.");
+            LoadCharacterMenu.AddItem(CharactersList);
+
+            LoadCharacter = new UIMenuItem("Load the character", "Load your saved character.");
+            LoadCharacterMenu.AddItem(LoadCharacter);
+
+            LoadDefaultPlayer = new UIMenuItem("Load the default", 
+                                                "Load the default character, " +
+                                               "If you are currently using the added character model, " +
+                                               "then use this button to load the character model, " +
+                                               "which was before loading the added characters.");
+
+            LoadCharacterMenu.AddItem(LoadDefaultPlayer);
+        }
+
+
+        void UpdateLoadMenu()
+        {
+            ListOfNames.Clear();
+            Parser.ParseCharactersNames(ListOfNames);
+
+            // Menu rebuilding
+            if (ListOfNames.Count > previousCountOfNamesList)
+            {
+                LoadCharacterMenu.Clear();
+
+                LoadMenuInit();
+            }
+
+
+            previousCountOfNamesList = ListOfNames.Count;
+
+
+        }
+
+
+        void SubMenuCharactersListSetup()
+        {
+            this.LoadCharacterMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current player character to a saved character.");
+            EmptyLoadingListButtonInfo = null;
+
+            ListOfNames = new List<dynamic>();
+            previousCountOfNamesList = 0;
+
+            UpdateLoadMenu();
+
+
+            if (ListOfNames.Count == 0)
+            {
+                EmptyLoadingListButtonInfo = new UIMenuItem("Nothing to load", "You have no saved characters yet.");
+                LoadCharacterMenu.AddItem(EmptyLoadingListButtonInfo);
+            }
+
+
+
+            LoadCharacterMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if (item == LoadCharacter)
+                {
+                    bool check = loadClass.LoadCharacter(ListOfNames[CharactersList.Index]);
+
+                    if (!check)
+                        UI.ShowSubtitle("Character was not loaded");
+                    else
+                        UI.ShowSubtitle("Character was loaded");
+                }
+                else if(item == LoadDefaultPlayer)
+                {
+                    loadClass.LoadDefaultPlayer();
+
+                    UI.ShowSubtitle("The default player was returned");
+                }
+            };
+
             
         }
-
-
-
     }
 }
