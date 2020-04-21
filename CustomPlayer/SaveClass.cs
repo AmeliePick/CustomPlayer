@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using GTA;
 using GTA.Native;
 using GTAN = GTA.Native.Function;
@@ -9,10 +10,16 @@ namespace CustomPlayer
 {
     class SaveClass
     {
-        public static void SaveCharacter(string OutfitName)
+        public SaveClass()
+        {
+            if (!Directory.Exists("scripts/CustomPlayer"))
+                Directory.CreateDirectory("scripts/CustomPlayer");
+        }
+
+
+        public void SaveCharacter(string CharacterName)
         {
             Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
-
 
             // Get all ped's components
             List<Component> PedComponentsVariation = new List<Component>();
@@ -28,14 +35,8 @@ namespace CustomPlayer
                 PedComponentsVariation.Add(component);
             }
 
-
-            Character character = new Character(OutfitName, playerPed.Model.GetHashCode(), PedComponentsVariation);
-
-            
-
+            Character character = new Character(CharacterName, playerPed.Model.Hash, PedComponentsVariation);
             character.Save();
-
-
         }
     }
 }

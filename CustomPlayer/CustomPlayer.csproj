@@ -64,6 +64,8 @@
   <ItemGroup>
     <Compile Include="Character.cs" />
     <Compile Include="CustomPlayer.cs" />
+    <Compile Include="LoadClass.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveClass.cs" />
   </ItemGroup>
