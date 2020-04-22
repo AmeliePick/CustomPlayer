@@ -24,27 +24,12 @@ using GTAN = GTA.Native.Function;
 
 namespace CustomPlayer
 {
-    public enum PedVariationData
-    {
-        PED_VARIATION_HEAD = 0,
-        PED_VARIATION_FACE = 1,
-        PED_VARIATION_HAIR = 2,
-        PED_VARIATION_TORSO = 3,
-        PED_VARIATION_LEGS = 4,
-        PED_VARIATION_HANDS = 5,
-        PED_VARIATION_FEET = 6,
-        PED_VARIATION_EYES = 7,
-        PED_VARIATION_ACCESSORIES = 8,
-        PED_VARIATION_TASKS = 9,
-        PED_VARIATION_TEXTURES = 10,
-        PED_VARIATION_TORSO2 = 11
-    };
+
 
 
     public class CustomPlayer : Script
     {
-        SaveClass saveClass;
-        LoadClass loadClass;
+        GameClass gameClass;
 
 
 
@@ -60,13 +45,16 @@ namespace CustomPlayer
         UIMenuItem LoadDefaultPlayer;
 
         UIMenuItem saveCharacter;
-        UIMenuItem customize;
+        UIMenu customizeMenu;
         UIMenuItem about;
 
 
 
         public CustomPlayer()
         {
+            // Init mod's classes
+            gameClass = new GameClass();
+
             // Setup the menu and menu's UI
             modMenuPool = new MenuPool();
             mainMenu = new UIMenu("Custom Player", "Select an opinion");
@@ -81,8 +69,7 @@ namespace CustomPlayer
             saveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
             mainMenu.AddItem(saveCharacter);
 
-            customize = new UIMenuItem("Customize", "Change your character’s clothes, voice.");
-            mainMenu.AddItem(customize);
+            SubMenuCustomizeSetup();
 
             about = new UIMenuItem("About", "Mod information.");
             mainMenu.AddItem(about);
@@ -91,12 +78,7 @@ namespace CustomPlayer
             // Init events
             mainMenu.OnItemSelect += onMainMenuItemSelect;
             KeyDown += OnKeyDown;
-            Tick += OnTick;
-
-
-            // Init mod's classes
-            saveClass = new SaveClass();
-            loadClass = new LoadClass(Game.Player.Character.Model);
+            Tick += OnTick;  
         }
 
         void OnTick(object sender, EventArgs e)
@@ -130,7 +112,7 @@ namespace CustomPlayer
 
                 if(inputText != "")
                 {
-                    saveClass.SaveCharacter(inputText);
+                    gameClass.SaveCharacter(inputText);
 
                     UI.ShowSubtitle("Done!");
                 }
@@ -214,7 +196,7 @@ namespace CustomPlayer
             {
                 if (item == LoadCharacter)
                 {
-                    bool check = loadClass.LoadCharacter(ListOfNames[CharactersList.Index]);
+                    bool check = gameClass.LoadCharacter(ListOfNames[CharactersList.Index]);
 
                     if (!check)
                         UI.ShowSubtitle("Character was not loaded");
@@ -223,13 +205,55 @@ namespace CustomPlayer
                 }
                 else if(item == LoadDefaultPlayer)
                 {
-                    loadClass.LoadDefaultPlayer();
+                    gameClass.LoadDefaultPlayer();
 
                     UI.ShowSubtitle("The default player was returned");
                 }
             };
 
             
+        }
+
+
+        void SubMenuCustomizeSetup()
+        {
+            customizeMenu = modMenuPool.AddSubMenu(mainMenu, "Customize");
+
+            
+            // VOICE MENU //
+            UIMenu voiceMenu = modMenuPool.AddSubMenu(customizeMenu, "Voice", "Change character's voice.");
+            
+            List<dynamic> voiceList = new List<dynamic>(gameClass.LoadVoiceList());
+            
+
+            UIMenuListItem voiceChangeList = new UIMenuListItem("", voiceList, 0, "Change character's voice.");
+            voiceMenu.AddItem(voiceChangeList);
+
+            UIMenuItem voiceTest = new UIMenuItem("Test the voice", "The player will say the phrase in the selected voice.");
+            voiceMenu.AddItem(voiceTest);
+
+
+            voiceMenu.OnItemSelect += (sender, item, index) =>
+            {
+                if(item == voiceTest)
+                {
+                    gameClass.PlaySpeechByPlayer(voiceList[voiceChangeList.Index]);
+                }
+            };
+
+
+            // CLOTHING MENU //
+            UIMenu clothingMenu = modMenuPool.AddSubMenu(customizeMenu, "Clothing", "Change the clothes of the model, if she has one");
+
+            //List<dynamic> headList = new List<dynamic>();
+            //UIMenuListItem head = new UIMenuListItem("Change head:", headList, 0, "Change character's head.");
+            //clothingMenu.AddItem(head);
+
+
+            clothingMenu.OnItemSelect += (sender, item, index) =>
+            {
+
+            };
         }
     }
 }
