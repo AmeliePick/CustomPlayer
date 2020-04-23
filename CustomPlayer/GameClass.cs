@@ -85,10 +85,26 @@ namespace CustomPlayer
         }
 
 
+        public void SetNewVoice(string voiceName)
+        {
+            this.playerPed.Voice = voiceName;
+            GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Voice = voiceName;
+        }
+
+
         public List<dynamic> LoadVoiceList()
         {
+            VoiceList voiceName = VoiceList.A_F_M_BEACH_01_WHITE_FULL_01;
             List<dynamic> voiceList = new List<dynamic>();
-            voiceList.Add("A_F_M_BEACH_01_WHITE_FULL_01");
+
+            while((int)voiceName < 791)
+            {
+                voiceList.Add(voiceName.ToString());
+
+                ++voiceName;
+            }
+
+            
 
             return voiceList;
         }
