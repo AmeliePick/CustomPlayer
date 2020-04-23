@@ -36,13 +36,14 @@ namespace CustomPlayer
         MenuPool modMenuPool;
         UIMenu mainMenu;
 
-        UIMenu LoadCharacterMenu;
+        // Load Menu
+        UIMenu UILoadMenu;
         List<dynamic> ListOfNames;
         private int previousCountOfNamesList;
-        UIMenuItem EmptyLoadingListButtonInfo;
-        UIMenuListItem CharactersList;
-        UIMenuItem LoadCharacter;
-        UIMenuItem LoadDefaultPlayer;
+        UIMenuItem UILoadMenuEmptyButton;
+        UIMenuListItem UICharactersList;
+        UIMenuItem UILoadCharacter;
+        UIMenuItem UILoadDefaultPlayer;
 
         UIMenuItem saveCharacter;
         UIMenu customizeMenu;
@@ -130,26 +131,25 @@ namespace CustomPlayer
 
         void LoadMenuInit()
         {
-            if (EmptyLoadingListButtonInfo != null && LoadCharacterMenu.MenuItems.Count > 0)
+            if (UILoadMenuEmptyButton != null)
             {
-                LoadCharacterMenu.Clear();
+                UILoadMenu.Clear();
 
-                EmptyLoadingListButtonInfo = null;
+                UILoadMenuEmptyButton = null;
             }
 
-            CharactersList = new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character.");
-            LoadCharacterMenu.AddItem(CharactersList);
+            UICharactersList = new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character.");
+            UILoadMenu.AddItem(UICharactersList);
 
-            LoadCharacter = new UIMenuItem("Load the character", "Load your saved character.");
-            LoadCharacterMenu.AddItem(LoadCharacter);
+            UILoadCharacter = new UIMenuItem("Load the character", "Load your saved character.");
+            UILoadMenu.AddItem(UILoadCharacter);
 
-            LoadDefaultPlayer = new UIMenuItem("Load the default", 
-                                                "Load the default character, " +
+            UILoadDefaultPlayer = new UIMenuItem("Load the default", 
+                                               "Load the default character, " +
                                                "If you are currently using the added character model, " +
                                                "then use this button to load the character model, " +
                                                "which was before loading the added characters.");
-
-            LoadCharacterMenu.AddItem(LoadDefaultPlayer);
+            UILoadMenu.AddItem(UILoadDefaultPlayer);
         }
 
 
@@ -161,22 +161,34 @@ namespace CustomPlayer
             // Menu rebuilding
             if (ListOfNames.Count > previousCountOfNamesList)
             {
-                LoadCharacterMenu.Clear();
+                List<dynamic> MenuItems = new List<dynamic>(UILoadMenu.MenuItems);
 
-                LoadMenuInit();
+                UILoadMenu.Clear();
+                if (MenuItems.Count == 1)
+                {
+                    LoadMenuInit();
+                }
+                else if(MenuItems.Count > 1)
+                {
+                    MenuItems.RemoveAt(0);
+                    MenuItems.Insert(0, new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character."));
+
+                    foreach (UIMenuItem item in MenuItems)
+                    {
+                        UILoadMenu.AddItem(item);
+                    }
+                }
             }
 
 
             previousCountOfNamesList = ListOfNames.Count;
-
-
         }
 
 
         void SubMenuCharactersListSetup()
         {
-            this.LoadCharacterMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current player character to a saved character.");
-            EmptyLoadingListButtonInfo = null;
+            this.UILoadMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current player character to a saved character.");
+            
 
             ListOfNames = new List<dynamic>();
             previousCountOfNamesList = 0;
@@ -186,24 +198,25 @@ namespace CustomPlayer
 
             if (ListOfNames.Count == 0)
             {
-                EmptyLoadingListButtonInfo = new UIMenuItem("Nothing to load", "You have no saved characters yet.");
-                LoadCharacterMenu.AddItem(EmptyLoadingListButtonInfo);
+                
+                UILoadMenuEmptyButton = new UIMenuItem("", "You have no saved characters yet.");
+                UILoadMenu.AddItem(UILoadMenuEmptyButton);
             }
 
 
 
-            LoadCharacterMenu.OnItemSelect += (sender, item, index) =>
+            UILoadMenu.OnItemSelect += (sender, item, index) =>
             {
-                if (item == LoadCharacter)
+                if (item == UILoadCharacter)
                 {
-                    bool check = gameClass.LoadCharacter(ListOfNames[CharactersList.Index]);
+                    bool check = gameClass.LoadCharacter(ListOfNames[UICharactersList.Index]);
 
                     if (!check)
                         UI.ShowSubtitle("Character was not loaded");
                     else
                         UI.ShowSubtitle("Character was loaded");
                 }
-                else if(item == LoadDefaultPlayer)
+                else if(item == UILoadDefaultPlayer)
                 {
                     gameClass.LoadDefaultPlayer();
 
@@ -221,25 +234,36 @@ namespace CustomPlayer
 
             
             // VOICE MENU //
-            UIMenu voiceMenu = modMenuPool.AddSubMenu(customizeMenu, "Voice", "Change character's voice.");
-            
+            UIMenu UIvoiceMenu = modMenuPool.AddSubMenu(customizeMenu, "Voice", "Change character's voice.");
+            UIvoiceMenu.SetMenuWidthOffset(100);
+
+
+
             List<dynamic> voiceList = new List<dynamic>(gameClass.LoadVoiceList());
             
-
             UIMenuListItem voiceChangeList = new UIMenuListItem("", voiceList, 0, "Change character's voice.");
-            voiceMenu.AddItem(voiceChangeList);
+            UIvoiceMenu.AddItem(voiceChangeList);
+
 
             UIMenuItem voiceTest = new UIMenuItem("Test the voice", "The player will say the phrase in the selected voice.");
-            voiceMenu.AddItem(voiceTest);
+            UIvoiceMenu.AddItem(voiceTest);
+
+            UIMenuItem applyNewVoice = new UIMenuItem("Apply", "Set to your character the selected vocie.");
+            UIvoiceMenu.AddItem(applyNewVoice);
 
 
-            voiceMenu.OnItemSelect += (sender, item, index) =>
+            UIvoiceMenu.OnItemSelect += (sender, item, index) =>
             {
                 if(item == voiceTest)
                 {
                     gameClass.PlaySpeechByPlayer(voiceList[voiceChangeList.Index]);
                 }
+                else if(item == applyNewVoice)
+                {
+                    gameClass.SetNewVoice(voiceList[voiceChangeList.Index]);
+                }
             };
+
 
 
             // CLOTHING MENU //
@@ -252,7 +276,7 @@ namespace CustomPlayer
 
             clothingMenu.OnItemSelect += (sender, item, index) =>
             {
-
+                
             };
         }
     }
