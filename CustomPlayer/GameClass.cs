@@ -108,5 +108,49 @@ namespace CustomPlayer
 
             return voiceList;
         }
+
+
+        public int getCurrentDrawableID(int componentId)
+        {
+            return GTAN.Call<int>(Hash.GET_PED_DRAWABLE_VARIATION,
+                                  GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                                  componentId);
+        }
+
+
+        public int getCurrentTextureID(int componentId)
+        {
+            return GTAN.Call<int>(Hash.GET_PED_TEXTURE_VARIATION,
+                                  GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                                  componentId);
+        }
+
+
+        public int getNumberOfDrawable(int componentId)
+        {
+            return GTAN.Call<int>(Hash.GET_NUMBER_OF_PED_DRAWABLE_VARIATIONS,
+                                  GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                                  componentId);
+        }
+
+
+        public int getNumberOfTexture(int componentId)
+        {
+            return GTAN.Call<int>(Hash.GET_NUMBER_OF_PED_TEXTURE_VARIATIONS,
+                                  GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                                  componentId);
+        }
+
+
+        public void setDrawableID(int componentId, int value)
+        {
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, componentId, value, getCurrentTextureID(componentId), 2);
+        }
+
+
+        public void setTextureID(int componentId, int value)
+        {
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, componentId, getCurrentDrawableID(componentId), value, 2);
+        }
     }
 }
