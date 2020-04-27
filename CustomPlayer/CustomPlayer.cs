@@ -24,14 +24,30 @@ using GTAN = GTA.Native.Function;
 
 namespace CustomPlayer
 {
+    class UIMenuComponents
+    {
+        // It's needs because we have a fucking stupidest menu in NativeUI.
+        public UIMenu instance { get; }
+        public string MenuTitle { get; }
 
+
+        public UIMenuComponents(UIMenu menu, string menuTitle)
+        {
+            this.instance = menu;
+            this.MenuTitle = menuTitle;
+        }
+
+
+    }
 
 
     public class CustomPlayer : Script
     {
         GameClass gameClass;
 
-
+        delegate int getCurrentID(int componentID);
+        delegate void setID(int componentId, int value);
+        delegate int getNumMethods(int componentId);
 
         MenuPool modMenuPool;
         UIMenu mainMenu;
@@ -46,42 +62,19 @@ namespace CustomPlayer
         UIMenuItem UILoadDefaultPlayer;
 
         UIMenuItem saveCharacter;
+
         UIMenu customizeMenu;
+        UIMenu UIclothingMenu;
+
         UIMenuItem about;
+
+
+        List<UIMenuComponents> ClothingMenuItems;
 
         enum BodyPart { HEAD = 0, HAIR = 2, FACE = 1, EYES = 7, TORSO = 3, TORSO2 = 11, HANDS = 5, LEGS = 4, FEET = 6 };
 
-        public CustomPlayer()
-        {
-            // Init mod's classes
-            gameClass = new GameClass();
-
-            // Setup the menu and menu's UI
-            modMenuPool = new MenuPool();
-            mainMenu = new UIMenu("Custom Player", "Select an opinion");
-            modMenuPool.Add(mainMenu);
-
-
-
-            // Init buttons
-
-            SubMenuCharactersListSetup();
-
-            saveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
-            mainMenu.AddItem(saveCharacter);
-
-            SubMenuCustomizeSetup();
-
-            about = new UIMenuItem("About", "Mod information.");
-            mainMenu.AddItem(about);
-
-
-            // Init events
-            mainMenu.OnItemSelect += onMainMenuItemSelect;
-            KeyDown += OnKeyDown;
-            Tick += OnTick;
-        }
-
+        // EVENTS //
+        #region EVENTS
         void OnTick(object sender, EventArgs e)
         {
             if (modMenuPool != null)
@@ -129,6 +122,56 @@ namespace CustomPlayer
         }
 
 
+        void setTexture(UIMenuListItem sender, int newIndex)
+        {
+            gameClass.setTextureID((int)Enum.Parse(typeof(BodyPart), FindComponentID(sender.Parent)), sender.IndexToItem(newIndex));
+        }
+
+        void setDrawable(UIMenuListItem sender, int newIndex)
+        {
+            gameClass.setDrawableID((int)Enum.Parse(typeof(BodyPart), FindComponentID(sender.Parent)), sender.IndexToItem(newIndex));
+        }
+        #endregion
+
+
+
+        public CustomPlayer()
+        {
+            // Init mod's classes
+            gameClass = new GameClass();
+
+            // Setup the menu and menu's UI
+            modMenuPool = new MenuPool();
+            mainMenu = new UIMenu("Custom Player", "Select an opinion");
+            modMenuPool.Add(mainMenu);
+
+
+
+            // Init buttons
+
+            SubMenuCharactersListSetup();
+
+            saveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
+            mainMenu.AddItem(saveCharacter);
+
+            ClothingMenuItems = new List<UIMenuComponents>();
+            SubMenuCustomizeSetup();
+
+            about = new UIMenuItem("About", "Mod information.");
+            mainMenu.AddItem(about);
+
+            modMenuPool.RefreshIndex();
+
+            // Init events
+            mainMenu.OnItemSelect += onMainMenuItemSelect;
+            KeyDown += OnKeyDown;
+            Tick += OnTick;
+        }
+
+
+
+        // LOAD MENU //
+        #region LOAD
         void LoadMenuInit()
         {
             if (UILoadMenuEmptyButton != null)
@@ -151,8 +194,7 @@ namespace CustomPlayer
                                                "which was before loading the added characters.");
             UILoadMenu.AddItem(UILoadDefaultPlayer);
         }
-
-
+        
         void UpdateLoadMenu()
         {
             ListOfNames.Clear();
@@ -160,20 +202,18 @@ namespace CustomPlayer
 
             // Menu rebuilding
             if (ListOfNames.Count > previousCountOfNamesList)
-            {
-                List<dynamic> MenuItems = new List<dynamic>(UILoadMenu.MenuItems);
-
-                UILoadMenu.Clear();
-                if (MenuItems.Count == 1)
+            {             
+                if (UILoadMenu.MenuItems.Count == 0 || UILoadMenu.MenuItems.Count == 1)
                 {
+                    UILoadMenu.Clear();
                     LoadMenuInit();
                 }
-                else if (MenuItems.Count > 1)
+                else if (UILoadMenu.MenuItems.Count > 1)
                 {
-                    MenuItems.RemoveAt(0);
-                    MenuItems.Insert(0, new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character."));
+                    UILoadMenu.MenuItems.RemoveAt(0);
+                    UILoadMenu.MenuItems.Insert(0, new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character."));
 
-                    foreach (UIMenuItem item in MenuItems)
+                    foreach (UIMenuItem item in UILoadMenu.MenuItems)
                     {
                         UILoadMenu.AddItem(item);
                     }
@@ -183,7 +223,6 @@ namespace CustomPlayer
 
             previousCountOfNamesList = ListOfNames.Count;
         }
-
 
         void SubMenuCharactersListSetup()
         {
@@ -214,7 +253,11 @@ namespace CustomPlayer
                     if (!check)
                         UI.ShowSubtitle("Character was not loaded");
                     else
+                    {
+                        UpdateClothingMenu();
+
                         UI.ShowSubtitle("Character was loaded");
+                    }
                 }
                 else if (item == UILoadDefaultPlayer)
                 {
@@ -226,7 +269,166 @@ namespace CustomPlayer
 
 
         }
+        #endregion
 
+
+
+        // CUSTOMIZE MENU //
+        #region CUSTOMIZE
+        string FindComponentID(UIMenu desired)
+        {
+            string componentTitleID = "";
+            foreach (var element in ClothingMenuItems)
+            {
+                if (element.instance == desired)
+                {
+                    componentTitleID = element.MenuTitle;
+                }
+            }
+
+            return componentTitleID;
+        }
+
+
+        // CLOTHING MENU //
+        #region CLOTHING
+        void ClothingMenuInit(UIMenu SubmenuAddTo, BodyPart bodyPart)
+        {
+            // SubMenu creating
+            UIMenuItem _UIMenuItem = new UIMenuItem(bodyPart.ToString());
+            SubmenuAddTo.AddItem(_UIMenuItem);
+            
+
+            UIMenu submenu = new UIMenu(_UIMenuItem.Text, _UIMenuItem.Text);
+
+            ClothingMenuItems.Add(new UIMenuComponents(submenu, bodyPart.ToString()));
+
+
+
+            const int NumberOfLists = 2;
+            string[] NamesOfLists = new string[NumberOfLists] { "Drawable", "Texture" };
+
+            getCurrentID[] getMethods = new getCurrentID[NumberOfLists] { gameClass.getCurrentDrawableID, gameClass.getCurrentTextureID };
+            getNumMethods[] getNums = new getNumMethods[NumberOfLists] { gameClass.getNumberOfDrawable, gameClass.getNumberOfTexture };
+
+
+            // Get components IDs
+            List<dynamic> componentsIDs = new List<dynamic>();
+
+            // Add a list of components IDs to the submenu
+            for (int it = 0; it < NumberOfLists; ++it)
+            {    
+                for (int num = 0; num < getNums[it]((int)bodyPart); num++)
+                {
+                    componentsIDs.Add(num);
+                }
+
+                if (componentsIDs.Count > 0)
+                {
+                    // Create the UI list of components
+                    UIMenuListItem UIListInSubMenu = new UIMenuListItem(NamesOfLists[it], componentsIDs, componentsIDs.IndexOf(getMethods[it]((int)bodyPart)));
+
+                    if (componentsIDs.Count < 2) UIListInSubMenu.Enabled = false;
+                    else
+                    {
+                        if (it == 0)
+                            UIListInSubMenu.OnListChanged += setDrawable;
+                        else
+                            UIListInSubMenu.OnListChanged += setTexture;
+
+
+                    }
+
+                    submenu.AddItem(UIListInSubMenu);
+                }
+                else if(submenu.MenuItems.Count == 0)
+                    _UIMenuItem.Enabled = false;
+
+                componentsIDs.Clear();
+            }
+            modMenuPool.Add(submenu);
+            SubmenuAddTo.BindMenuToItem(submenu, _UIMenuItem);
+        }
+
+        void ClothingMenuSetup()
+        {
+            // Add submenus with elements
+            BodyPart bodyPart = BodyPart.HEAD;
+            for (int i = 0; i < 9; ++i)
+            {
+                ClothingMenuInit(UIclothingMenu, bodyPart);
+
+                ++bodyPart;
+            }
+        }
+
+        void UpdateClothingMenu()
+        {
+            const int NumberOfLists = 2;
+            string[] NamesOfLists = new string[NumberOfLists] { "Drawable", "Texture" };
+            List<UIMenuListItem> listItems = new List<UIMenuListItem>(NumberOfLists);
+
+            getCurrentID[] getMethods = new getCurrentID[NumberOfLists] { gameClass.getCurrentDrawableID, gameClass.getCurrentTextureID };
+            getNumMethods[] getNums = new getNumMethods[NumberOfLists] { gameClass.getNumberOfDrawable, gameClass.getNumberOfTexture };
+
+
+            for (int i = 0; i < ClothingMenuItems.Count; ++i)
+            {
+                // Working with each sub menu
+
+
+                // Create the UI list
+                for (int it = 0; it < NumberOfLists; ++it)
+                {
+                    // Add a list of components IDs to the submenu
+                    List<dynamic> componentsIDs = new List<dynamic>();
+
+                    int NumberOfDrawable = getNums[it]((int)Enum.Parse(typeof(BodyPart), ClothingMenuItems[i].MenuTitle));
+                    for (int num = 0; num < NumberOfDrawable; num++)
+                    {
+                        componentsIDs.Add(num);
+                    }
+
+                    if (componentsIDs.Count > 0)
+                    {
+                        // Create UI list
+                        UIMenuListItem UIList = new UIMenuListItem(NamesOfLists[it], componentsIDs, getMethods[it]((int)Enum.Parse(typeof(BodyPart), ClothingMenuItems[i].MenuTitle)));
+                        if (componentsIDs.Count == 1)
+                            UIList.Enabled = false;
+
+                        // Set events
+                        if (it == 0)
+                            UIList.OnListChanged += setDrawable;
+                        else
+                            UIList.OnListChanged += setTexture;
+
+                        listItems.Add(UIList);
+                    }
+                }
+
+                // Add UI lists to the sub menu
+                for (int j = 0; j < UIclothingMenu.MenuItems.Count; ++j)
+                {
+                    if (ClothingMenuItems[i].MenuTitle == UIclothingMenu.MenuItems[j].Text)
+                    {
+                        if (listItems.Count == 2)
+                        {
+                            ClothingMenuItems[i].instance.MenuItems.Clear();
+                            ClothingMenuItems[i].instance.AddItem(listItems[0]);
+                            ClothingMenuItems[i].instance.AddItem(listItems[1]);
+                        }
+                        else
+                        {
+                            UIclothingMenu.MenuItems[j].Enabled = false;
+                        }
+
+                        break;
+                    }
+                }
+
+                listItems.Clear();
+            }
+        }
 
         void SubMenuCustomizeSetup()
         {
@@ -265,76 +467,11 @@ namespace CustomPlayer
             };
 
 
-
             // CLOTHING MENU //
-            UIMenu UIclothingMenu = modMenuPool.AddSubMenu(customizeMenu, "Clothing", "Change the clothes of the model, if she has one");
-
-            // Add submenus with elements
-            BodyPart bodyPart = BodyPart.HEAD;
-            for(int i = 0; i < 1; ++i)
-            {
-                UIMenuItem _UIMenuItem = new UIMenuItem(bodyPart.ToString());
-                UIclothingMenu.AddItem(_UIMenuItem);
-
-                UIMenu submenu = new UIMenu(_UIMenuItem.Text, _UIMenuItem.Text);
+            UIclothingMenu = modMenuPool.AddSubMenu(customizeMenu, "Clothing", "Change the clothes of the model, if she has one");
+            ClothingMenuSetup();
 
 
-                
-                List<dynamic> clothingDrawID = new List<dynamic>(gameClass.getNumberOfDrawable((int)bodyPart));
-                for (int num = 0; num < clothingDrawID.Capacity; num++)
-                {
-                    clothingDrawID.Add(num);
-                }
-                UIMenuListItem drawableID = new UIMenuListItem("Drawable", clothingDrawID, clothingDrawID.IndexOf(gameClass.getCurrentDrawableID((int)bodyPart)));
-
-                if (clothingDrawID.Count < 2) drawableID.Enabled = false;
-                else
-                {
-                    drawableID.OnListChanged += (sender, newIndex) =>
-                    {
-                        string componentTitleID = "";
-                        foreach (var element in UIclothingMenu.MenuItems)
-                        {
-                            
-                        }
-
-                        gameClass.setDrawableID(componentId: (int)Enum.Parse(typeof(BodyPart), componentTitleID),
-                                            value: sender.IndexToItem(sender.Index));
-                    };
-                }
-
-                
-                submenu.AddItem(drawableID);
-
-
-
-                List<dynamic> clothingTextureID = new List<dynamic>(gameClass.getNumberOfTexture((int)bodyPart));
-                for (int num = 0; num < clothingTextureID.Capacity; num++)
-                {
-                    clothingTextureID.Add(num);
-                }
-                UIMenuListItem textureID = new UIMenuListItem("Texture", clothingTextureID, clothingTextureID.IndexOf(gameClass.getCurrentTextureID((int)bodyPart)));
-
-                if (clothingTextureID.Count < 2) textureID.Enabled = false;
-                else
-                {
-                    textureID.OnListChanged += (sender, newIndex) =>
-                    {
-                        gameClass.setTextureID(componentId: (int)Enum.Parse(typeof(BodyPart), sender.IndexToItem(sender.Index)),
-                                               value: sender.IndexToItem(sender.Index));
-                    };
-                }
-
-
-                submenu.AddItem(textureID);
-
-                modMenuPool.Add(submenu);
-                UIclothingMenu.BindMenuToItem(submenu, _UIMenuItem);
-
-                ++bodyPart;
-            }
-
-            
 
 
             UIclothingMenu.OnItemSelect += (sender, item, index) =>
@@ -342,5 +479,7 @@ namespace CustomPlayer
                 
             };
         }
+        #endregion
+        #endregion
     }
 }
