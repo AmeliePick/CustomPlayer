@@ -144,13 +144,13 @@ namespace CustomPlayer
 
         public void setDrawableID(int componentId, int value)
         {
-            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, componentId, value, getCurrentTextureID(componentId), 2);
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), componentId, value, getCurrentTextureID(componentId), 2);
         }
 
 
         public void setTextureID(int componentId, int value)
         {
-            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, playerPed, componentId, getCurrentDrawableID(componentId), value, 2);
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), componentId, getCurrentDrawableID(componentId), value, 2);
         }
     }
 }
