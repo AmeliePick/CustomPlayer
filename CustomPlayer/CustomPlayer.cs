@@ -203,20 +203,10 @@ namespace CustomPlayer
             // Menu rebuilding
             if (ListOfNames.Count > previousCountOfNamesList)
             {             
-                if (UILoadMenu.MenuItems.Count == 0 || UILoadMenu.MenuItems.Count == 1)
+                if (UILoadMenu.MenuItems.Count >= 0 || UILoadMenu.MenuItems.Count == 1)
                 {
                     UILoadMenu.Clear();
                     LoadMenuInit();
-                }
-                else if (UILoadMenu.MenuItems.Count > 1)
-                {
-                    UILoadMenu.MenuItems.RemoveAt(0);
-                    UILoadMenu.MenuItems.Insert(0, new UIMenuListItem("Select your hero:", ListOfNames, 0, "Load the selected character."));
-
-                    foreach (UIMenuItem item in UILoadMenu.MenuItems)
-                    {
-                        UILoadMenu.AddItem(item);
-                    }
                 }
             }
 
@@ -429,6 +419,7 @@ namespace CustomPlayer
                 listItems.Clear();
             }
         }
+        #endregion
 
         void SubMenuCustomizeSetup()
         {
@@ -479,7 +470,6 @@ namespace CustomPlayer
                 
             };
         }
-        #endregion
         #endregion
     }
 }
