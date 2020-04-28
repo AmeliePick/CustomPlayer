@@ -41,11 +41,15 @@ namespace CustomPlayer
         public Player player;
         public Ped playerPed;
 
+        GamePlayer PlayerToSave;
+
 
         public GameClass()
         {
             player = new Player(Game.Player.Handle);
             playerPed = new Ped(GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Handle);
+
+            PlayerToSave = new GamePlayer("", "");
 
             saveClass = new SaveClass();
             loadClass = new LoadClass(player.Character.Model);
@@ -54,7 +58,8 @@ namespace CustomPlayer
 
         public void SaveCharacter(string CharacterName)
         {
-            saveClass.SaveCharacter(CharacterName);
+            PlayerToSave.Name = CharacterName;
+            saveClass.SaveCharacter(PlayerToSave);
         }
 
 
@@ -87,8 +92,7 @@ namespace CustomPlayer
 
         public void SetNewVoice(string voiceName)
         {
-            this.playerPed.Voice = voiceName;
-            GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Voice = voiceName;
+            this.playerPed.Voice = PlayerToSave.Voice = voiceName;
         }
 
 

@@ -17,7 +17,7 @@ namespace CustomPlayer
         }
 
 
-        public void SaveCharacter(string CharacterName)
+        public void SaveCharacter(GamePlayer person)
         {
             Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
@@ -35,7 +35,7 @@ namespace CustomPlayer
                 PedComponentsVariation.Add(component);
             }
 
-            Character character = new Character(CharacterName, playerPed.Model.Hash, PedComponentsVariation);
+            Character character = new Character(person.Name, playerPed.Model.Hash, person.Voice, PedComponentsVariation);
             character.Save();
         }
     }

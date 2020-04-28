@@ -27,6 +27,8 @@ namespace CustomPlayer
 
                 Ped PlayerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
+                PlayerPed.Voice = character.Voice;
+
                 foreach (var component in character.PedComponents)
                 {
                     GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, PlayerPed, (int)component.ComponentId, component.DrawableId, component.TextureId, 2);

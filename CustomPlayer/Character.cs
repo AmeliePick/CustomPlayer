@@ -4,6 +4,19 @@ using System.IO;
 
 namespace CustomPlayer
 {
+    public class GamePlayer
+    {
+        public string Name { set; get; }
+
+        public string Voice { set;  get; }
+
+        public GamePlayer(string Name, string Voice)
+        {
+            this.Name  = Name;
+            this.Voice = Voice;
+        }
+    }
+
     public class Component
     {
         public PedVariationData ComponentId { get; }
@@ -27,13 +40,16 @@ namespace CustomPlayer
 
         public int ModelHash { get; }
 
+        public string Voice { get; }
+
         public List<Component> PedComponents { get; }
 
 
-        public Character(string CharacterName, int ModelHash, List<Component> PedComponents)
+        public Character(string CharacterName, int ModelHash, string Voice, List<Component> PedComponents)
         {
-            Name = CharacterName;
-            this.ModelHash = ModelHash;
+            this.Name          = CharacterName;
+            this.ModelHash     = ModelHash;
+            this.Voice         = Voice;
             this.PedComponents = new List<Component>(PedComponents);
         }
 
@@ -41,10 +57,11 @@ namespace CustomPlayer
 
         public bool Save()
         {
-            XElement MakeElement(XDocument doc)
+            XElement MakePerson(XDocument doc)
             {
                 XElement person = new XElement("person", new XAttribute("name", this.Name),
-                                  new XElement("hash", this.ModelHash));
+                                  new XElement("hash", this.ModelHash),
+                                  new XElement("Voice", this.Voice));
 
                 XElement personComponent = new XElement("Components");
 
@@ -71,7 +88,7 @@ namespace CustomPlayer
                 xdoc.Add(Characters);
 
 
-                Characters.Add(MakeElement(xdoc));
+                Characters.Add(MakePerson(xdoc));
 
                 xdoc.Save("scripts/CustomPlayer/characters.xml");
 
@@ -85,7 +102,7 @@ namespace CustomPlayer
                     return false;
 
                 XElement root = xdoc.Element("Characters");
-                root.Add(MakeElement(xdoc));
+                root.Add(MakePerson(xdoc));
 
                 xdoc.Save("scripts/CustomPlayer/characters.xml");
 
@@ -115,6 +132,7 @@ namespace CustomPlayer
             {
                 string PersonName = Person.Attribute("name").Value;
                 int Hash = int.Parse(Person.Element("hash").Value);
+                string Voice = Person.Element("Voice").Value;
                 List<Component> ListOfComponents = new List<Component>();
 
 
@@ -138,7 +156,7 @@ namespace CustomPlayer
 
 
 
-                Character character = new Character(PersonName, Hash, ListOfComponents);
+                Character character = new Character(PersonName, Hash, Voice, ListOfComponents);
 
                 return character;
             }
