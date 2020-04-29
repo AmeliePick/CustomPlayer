@@ -80,6 +80,12 @@ namespace CustomPlayer
             if (modMenuPool != null)
                 modMenuPool.ProcessMenus();
 
+            if (Game.Player.IsDead)
+            {
+                gameClass.LoadDefaultPlayer();
+                UpdateClothingMenu();
+            }
+
         }
 
         void OnKeyDown(object sender, KeyEventArgs e)
@@ -252,6 +258,7 @@ namespace CustomPlayer
                 else if (item == UILoadDefaultPlayer)
                 {
                     gameClass.LoadDefaultPlayer();
+                    UpdateClothingMenu();
 
                     UI.ShowSubtitle("The default player was returned");
                 }
@@ -385,12 +392,14 @@ namespace CustomPlayer
                         UIMenuListItem UIList = new UIMenuListItem(NamesOfLists[it], componentsIDs, getMethods[it]((int)Enum.Parse(typeof(BodyPart), ClothingMenuItems[i].MenuTitle)));
                         if (componentsIDs.Count == 1)
                             UIList.Enabled = false;
-
-                        // Set events
-                        if (it == 0)
-                            UIList.OnListChanged += setDrawable;
                         else
-                            UIList.OnListChanged += setTexture;
+                        {
+                            // Set events
+                            if (it == 0)
+                                UIList.OnListChanged += setDrawable;
+                            else
+                                UIList.OnListChanged += setTexture;
+                        }
 
                         listItems.Add(UIList);
                     }
@@ -406,9 +415,13 @@ namespace CustomPlayer
                             ClothingMenuItems[i].instance.MenuItems.Clear();
                             ClothingMenuItems[i].instance.AddItem(listItems[0]);
                             ClothingMenuItems[i].instance.AddItem(listItems[1]);
+
+                            if (UIclothingMenu.MenuItems[j].Enabled == false)
+                                UIclothingMenu.MenuItems[j].Enabled = true;
                         }
                         else
                         {
+                            // Set menu as non enabled
                             UIclothingMenu.MenuItems[j].Enabled = false;
                         }
 
