@@ -1,15 +1,4 @@
-﻿/*
-# ======================= #
-#   by AmeliePick. 2020   #
-#  github.com/AmeliePick  #
-# ======================= #
-*/
-
-
-
-
-
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using GTA;
 using GTA.Native;
@@ -20,28 +9,9 @@ using System.Collections.Generic;
 
 using GTAN = GTA.Native.Function;
 
-
-
 namespace CustomPlayer
 {
-    class UIMenuComponents
-    {
-        // It's needs because we have a fucking stupidest menu in NativeUI.
-        public UIMenu instance { get; }
-        public string MenuTitle { get; }
-
-
-        public UIMenuComponents(UIMenu menu, string menuTitle)
-        {
-            this.instance = menu;
-            this.MenuTitle = menuTitle;
-        }
-
-
-    }
-
-
-    public class CustomPlayer : Script
+    class UICustomPlayer
     {
         GameClass gameClass;
 
@@ -75,7 +45,7 @@ namespace CustomPlayer
 
         // EVENTS //
         #region EVENTS
-        void OnTick(object sender, EventArgs e)
+        public void OnTick(object sender, EventArgs e)
         {
             if (modMenuPool != null)
                 modMenuPool.ProcessMenus();
@@ -88,7 +58,7 @@ namespace CustomPlayer
 
         }
 
-        void OnKeyDown(object sender, KeyEventArgs e)
+        public void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F10 && !modMenuPool.IsAnyMenuOpen())
             {
@@ -141,7 +111,7 @@ namespace CustomPlayer
 
 
 
-        public CustomPlayer()
+        public UICustomPlayer()
         {
             // Init mod's classes
             gameClass = new GameClass();
@@ -170,8 +140,6 @@ namespace CustomPlayer
 
             // Init events
             mainMenu.OnItemSelect += onMainMenuItemSelect;
-            KeyDown += OnKeyDown;
-            Tick += OnTick;
         }
 
 
@@ -200,7 +168,7 @@ namespace CustomPlayer
                                                "which was before loading the added characters.");
             UILoadMenu.AddItem(UILoadDefaultPlayer);
         }
-        
+
         void UpdateLoadMenu()
         {
             ListOfNames.Clear();
@@ -208,7 +176,7 @@ namespace CustomPlayer
 
             // Menu rebuilding
             if (ListOfNames.Count > previousCountOfNamesList)
-            {             
+            {
                 if (UILoadMenu.MenuItems.Count >= 0 || UILoadMenu.MenuItems.Count == 1)
                 {
                     UILoadMenu.Clear();
@@ -294,7 +262,7 @@ namespace CustomPlayer
             // SubMenu creating
             UIMenuItem _UIMenuItem = new UIMenuItem(bodyPart.ToString());
             SubmenuAddTo.AddItem(_UIMenuItem);
-            
+
 
             UIMenu submenu = new UIMenu(_UIMenuItem.Text, _UIMenuItem.Text);
 
@@ -314,7 +282,7 @@ namespace CustomPlayer
 
             // Add a list of components IDs to the submenu
             for (int it = 0; it < NumberOfLists; ++it)
-            {    
+            {
                 for (int num = 0; num < getNums[it]((int)bodyPart); num++)
                 {
                     componentsIDs.Add(num);
@@ -338,7 +306,7 @@ namespace CustomPlayer
 
                     submenu.AddItem(UIListInSubMenu);
                 }
-                else if(submenu.MenuItems.Count == 0)
+                else if (submenu.MenuItems.Count == 0)
                     _UIMenuItem.Enabled = false;
 
                 componentsIDs.Clear();
@@ -480,7 +448,7 @@ namespace CustomPlayer
 
             UIclothingMenu.OnItemSelect += (sender, item, index) =>
             {
-                
+
             };
         }
         #endregion
