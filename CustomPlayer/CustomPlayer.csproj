@@ -71,6 +71,7 @@
     <Compile Include="src\Game\SaveClass.cs" />
     <Compile Include="src\Game\VoiceList.cs" />
     <Compile Include="src\UICustomPlayer\UICustomPlayer.cs" />
+    <Compile Include="src\UICustomPlayer\UIModel.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

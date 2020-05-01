@@ -56,6 +56,17 @@ namespace CustomPlayer
         }
 
 
+
+        public void OnTick(object sender, EventArgs e)
+        {
+            if (Game.Player.IsDead)
+            {
+                LoadDefaultPlayer();
+            }
+        }
+
+
+
         public void SaveCharacter(string CharacterName)
         {
             PlayerToSave.Name = CharacterName;
@@ -79,7 +90,6 @@ namespace CustomPlayer
 
             return isLoaded;
         }
-
 
 
         public void PlaySpeechByPlayer(string voice)

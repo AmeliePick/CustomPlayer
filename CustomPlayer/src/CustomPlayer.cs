@@ -19,32 +19,12 @@ using System;
 using System.Collections.Generic;
 
 using GTAN = GTA.Native.Function;
-
-
+using CustomPlayer_UserInterface;
 
 namespace CustomPlayer
 {
-    class UIMenuComponents
-    {
-        // It's needs because we have a fucking stupidest menu in NativeUI.
-        public UIMenu instance { get; }
-        public string MenuTitle { get; }
-
-
-        public UIMenuComponents(UIMenu menu, string menuTitle)
-        {
-            this.instance = menu;
-            this.MenuTitle = menuTitle;
-        }
-
-
-    }
-
-
     public class CustomPlayer : Script
     {
-        GameClass gameClass;
-
         UICustomPlayer UICustomPlayer;
 
 
@@ -53,6 +33,8 @@ namespace CustomPlayer
         void OnTick(object sender, EventArgs e)
         {
             UICustomPlayer.OnTick(sender, e);
+
+            
 
         }
 
@@ -68,9 +50,6 @@ namespace CustomPlayer
 
         public CustomPlayer()
         {
-            // Init mod's classes
-            gameClass = new GameClass();
-
             UICustomPlayer = new UICustomPlayer();
 
             // Init events
