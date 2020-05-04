@@ -94,9 +94,8 @@ namespace CustomPlayer
 
         public void PlaySpeechByPlayer(string voice)
         {
-            GTAN.Call(Hash.STOP_CURRENT_PLAYING_AMBIENT_SPEECH, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX));
-
-            GTAN.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), "GENERIC_HI", voice, "SPEECH_PARAMS_STANDARD", 0);
+            if(!GTAN.Call<bool>(Hash.IS_AMBIENT_SPEECH_PLAYING, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX)))
+                GTAN.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), "FIGHT", voice, "SPEECH_PARAMS_STANDARD", 0);
         }
 
 

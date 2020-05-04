@@ -306,7 +306,7 @@ namespace CustomPlayer_UserInterface
         {
             // Add submenus with elements
             BodyPart bodyPart = BodyPart.HEAD;
-            for (int i = 0; i < 9; ++i)
+            for (int i = 0; i < 8; ++i)
             {
                 ClothingMenuInit(UIclothingMenu, bodyPart);
 

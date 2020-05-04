@@ -23,7 +23,11 @@ namespace CustomPlayer
             if (character != null)
             {
                 // Changing the GTA player
-                Game.Player.ChangeModel(new Model(character.ModelHash));
+                while (Game.Player.Character.Model.Hash != character.ModelHash)
+                {
+                    Game.Player.ChangeModel(new Model(character.ModelHash));
+                    System.Threading.Thread.Sleep(500);
+                }
 
                 Ped PlayerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
