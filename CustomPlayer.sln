@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPlayer_Vi", "CustomPl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPlayer", "CustomPlayer\CustomPlayer.csproj", "{AF98B5A6-9EE1-4B00-AC8A-66DBBFD620DA}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SpeechParser", "SpeechParser\SpeechParser.pyproj", "{DBC146C1-AF19-4CE4-9D96-17D7AF60F5B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{AF98B5A6-9EE1-4B00-AC8A-66DBBFD620DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF98B5A6-9EE1-4B00-AC8A-66DBBFD620DA}.Release|x64.ActiveCfg = Release|x64
 		{AF98B5A6-9EE1-4B00-AC8A-66DBBFD620DA}.Release|x64.Build.0 = Release|x64
+		{DBC146C1-AF19-4CE4-9D96-17D7AF60F5B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBC146C1-AF19-4CE4-9D96-17D7AF60F5B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DBC146C1-AF19-4CE4-9D96-17D7AF60F5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBC146C1-AF19-4CE4-9D96-17D7AF60F5B2}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
