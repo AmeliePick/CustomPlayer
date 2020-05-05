@@ -1,16 +1,9 @@
 ﻿using CustomPlayer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomPlayer_UserInterfaceModel
 {
-    public enum BodyPart { HEAD = 0, HAIR = 2, FACE = 1, EYES = 7, TORSO = 3, TORSO2 = 11, HANDS = 5, LEGS = 4, FEET = 6 };
-
-
-
     class UIModel
     {
         private GameClass game;
@@ -27,26 +20,13 @@ namespace CustomPlayer_UserInterfaceModel
 
         public List<dynamic> voiceList;
 
+        public Dictionary<string, int> bodyPart;
+        
         public string output { private set; get; }
 
 
-        bool PlayerHasBeenChanged;
-        public bool isPlayerChanged
-        {
-            private set
-            {
-                PlayerHasBeenChanged = value;
-            }
-
-            get
-            {
-                bool toReturn = PlayerHasBeenChanged;
-
-                if(PlayerHasBeenChanged) PlayerHasBeenChanged = false;
-
-                return toReturn;
-            }
-        }
+        public delegate void isPlayerChanged();
+        public event isPlayerChanged playerChangedNotify;
 
 
         public UIModel()
@@ -57,11 +37,28 @@ namespace CustomPlayer_UserInterfaceModel
             previousCountOfCharactersNamesList = 0;
 
             voiceList = new List<dynamic>(game.LoadVoiceList());
+            bodyPart = new Dictionary<string, int>
+            {
+                { "HEAD", 0 },
+                { "HAIR", 2 },
+                { "EYES", 7 },
+                { "FACE", 1 },
+                
+                { "TORSO",3 },
+                { "TORSO2",11 },
+                { "HANDS",5 },
+                { "LEGS", 4 },
+                { "FEET", 6 },
+                
+                { "ACCESSORIES", 8 },
+                { "TASKS", 9 },
+                { "TEXTURES", 10 },     
+            };
+
+        
 
             getNumberOfComponents   = new getNumberOfComponentsVariation[2] { game.getNumberOfDrawable, game.getNumberOfTexture };
             getCurrentID            = new getCurrentIDVariation[2] { game.getCurrentDrawableID, game.getCurrentTextureID };
-
-            PlayerHasBeenChanged = false;
         }
 
 
@@ -120,7 +117,7 @@ namespace CustomPlayer_UserInterfaceModel
 
             if (checkLoad)
             {
-                isPlayerChanged = true;
+                playerChangedNotify?.Invoke();
                 output = "Character was loaded";
             }         
             else
@@ -130,7 +127,7 @@ namespace CustomPlayer_UserInterfaceModel
         public void loadDefaultCharacter()
         {
             game.LoadDefaultPlayer();
-            isPlayerChanged = true;
+            playerChangedNotify?.Invoke();
         }
 
 

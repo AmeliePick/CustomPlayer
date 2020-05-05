@@ -59,7 +59,7 @@ namespace CustomPlayer
 
         public void OnTick(object sender, EventArgs e)
         {
-            if (Game.Player.IsDead)
+            if (Game.Player.IsDead && Game.Player.Character.Model.Hash != -1692214353 && Game.Player.Character.Model.Hash != 225514697 && Game.Player.Character.Model.Hash != -1686040670)
             {
                 LoadDefaultPlayer();
             }
