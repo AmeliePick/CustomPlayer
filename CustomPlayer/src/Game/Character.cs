@@ -63,15 +63,20 @@ namespace CustomPlayer
                                   new XElement("hash", this.ModelHash),
                                   new XElement("Voice", this.Voice));
 
-                XElement personComponent = new XElement("Components");
+                XElement personComponents = new XElement("Components");
 
                 foreach (var component in this.PedComponents)
                 {
-                    XElement Components = new XElement(component.ComponentId.ToString(), component.DrawableId, component.TextureId);
-                    personComponent.Add(Components);
+                    XElement components = new XElement(component.ComponentId.ToString());
+                    XElement drawableID = new XElement("Drawable", component.DrawableId.ToString());
+                    XElement textureID  = new XElement("Texture", component.TextureId.ToString());
+
+                    components.Add(drawableID);
+                    components.Add(textureID);
+                    personComponents.Add(components);
                 }
 
-                person.Add(personComponent);
+                person.Add(personComponents);
 
 
                 return person;
@@ -133,19 +138,20 @@ namespace CustomPlayer
                 string PersonName = Person.Attribute("name").Value;
                 int Hash = int.Parse(Person.Element("hash").Value);
                 string Voice = Person.Element("Voice").Value;
-                List<Component> ListOfComponents = new List<Component>();
+                List<Component> ListOfComponents = new List<Component>(12);
 
 
                 XElement pedComponent = Person.Element("Components");
 
                 PedVariationData pedVariation = PedVariationData.PED_VARIATION_HEAD;
-                while((int)pedVariation < 11)
+                while((int)pedVariation < 12)
                 {
-                    string componentsInfo = pedComponent.Element(pedVariation.ToString()).Value;
+                    XElement drawable = pedComponent.Element(pedVariation.ToString()).Element("Drawable");
+                    XElement texture  = pedComponent.Element(pedVariation.ToString()).Element("Texture");
 
-                    int DrawableId = componentsInfo[0] - '0';
-                    int TextureId  = componentsInfo[1] - '0';
-                    
+                    int DrawableId = int.Parse(drawable.Value);
+                    int TextureId  = int.Parse(texture.Value);
+
 
                     Component component = new Component(pedVariation, DrawableId, TextureId);
                     ListOfComponents.Add(component);

@@ -36,6 +36,7 @@ namespace CustomPlayer
     class GameClass
     {
         private SaveClass saveClass { get; }
+
         private LoadClass loadClass { get; }
 
         public Player player;
@@ -67,10 +68,17 @@ namespace CustomPlayer
 
 
 
-        public void SaveCharacter(string CharacterName)
+        public void saveCharacter(string CharacterName)
         {
             PlayerToSave.Name = CharacterName;
-            saveClass.SaveCharacter(PlayerToSave);
+            if(PlayerToSave.Voice == "")
+            {
+                if      (playerPed.Model.Hash == -1692214353) PlayerToSave.Voice = "FRANKLIN_NORMAL";
+                else if (playerPed.Model.Hash == 225514697)   PlayerToSave.Voice = "MICHAEL_NORMAL";
+                else if (playerPed.Model.Hash == -1686040670) PlayerToSave.Voice = "TREVOR_NORMAL";
+            }
+
+            saveClass.saveCharacter(PlayerToSave);
         }
 
 

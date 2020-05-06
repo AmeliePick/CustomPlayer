@@ -17,13 +17,13 @@ namespace CustomPlayer
         }
 
 
-        public void SaveCharacter(GamePlayer person)
+        public void saveCharacter(GamePlayer person)
         {
             Ped playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
 
             // Get all ped's components
-            List<Component> PedComponentsVariation = new List<Component>();
-            for (PedVariationData PedComponentID = 0; (int)PedComponentID < 11; ++PedComponentID)
+            List<Component> PedComponentsVariation = new List<Component>(12);
+            for (PedVariationData PedComponentID = PedVariationData.PED_VARIATION_HEAD; (int)PedComponentID < 12; ++PedComponentID)
             {
                 Component component = new Component
                 (
