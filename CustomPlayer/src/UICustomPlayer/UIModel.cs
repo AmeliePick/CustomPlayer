@@ -103,7 +103,7 @@ namespace CustomPlayer_UserInterfaceModel
         {
             if (CharacterName != "")
             {
-                game.SaveCharacter(CharacterName);
+                game.saveCharacter(CharacterName);
 
                 output = "Done!";
             }

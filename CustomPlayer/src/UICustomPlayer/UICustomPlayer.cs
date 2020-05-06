@@ -7,49 +7,47 @@ using CustomPlayer_UserInterfaceModel;
 
 namespace CustomPlayer_UserInterface
 {
+    /// <summary>
+    /// Storage for UIMenu components.
+    /// </summary>
     class UIMenuComponents
     {
-        // It's needs because we have a fucking stupidest menu in NativeUI.
         public UIMenu instance { get; }
 
         public string MenuTitle { get; }
 
-        public int TitleToInt { get; }
+        public int TitleToCharatcerComponentID { get; }
 
 
-        public UIMenuComponents(UIMenu menu, string menuTitle, int componentId)
+        public UIMenuComponents(UIMenu menu, string menuTitle, int characterComponentId)
         {
-            this.instance = menu;
-            this.MenuTitle = menuTitle;
-            this.TitleToInt = componentId;
+            this.instance   = menu;
+            this.MenuTitle  = menuTitle;
+            this.TitleToCharatcerComponentID = characterComponentId;
         }
-
-
     }
 
 
-
+    /// <summary>
+    /// User Interface
+    /// </summary>
     class UICustomPlayer
     {
         UIModel UIModel;
-        //GameClass gameClass;
-
-
 
         MenuPool modMenuPool;
         UIMenu mainMenu;
 
         // Load Menu
         UIMenu UILoadMenu;
-
         UIMenuItem UILoadMenuEmptyButton;
         UIMenuListItem UICharactersList;
         UIMenuItem UILoadCharacter;
         UIMenuItem UILoadDefaultPlayer;
 
-        UIMenuItem saveCharacter;
+        UIMenuItem UIsaveCharacter;
 
-        UIMenu customizeMenu;
+        UIMenu UIcustomizeMenu;
         UIMenu UIclothingMenu;
 
         UIMenuItem about;
@@ -57,44 +55,10 @@ namespace CustomPlayer_UserInterface
 
         List<UIMenuComponents> ClothingMenuItems;
 
+        //---------------------------------------//
+        
         
 
-
-        public UICustomPlayer()
-        {
-            // Init mod's classes
-            UIModel = new UIModel();
-            UIModel.playerChangedNotify += PlayerHasBeenChanged;
-
-            // Setup the menu and menu's UI
-            modMenuPool = new MenuPool();
-            mainMenu = new UIMenu("Custom Player", "Select an opinion");
-            modMenuPool.Add(mainMenu);
-
-
-
-            // Init buttons
-
-            SubMenuCharactersListSetup();
-
-            saveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
-            mainMenu.AddItem(saveCharacter);
-
-            ClothingMenuItems = new List<UIMenuComponents>();
-            SubMenuCustomizeSetup();
-
-            about = new UIMenuItem("About", "Mod information.");
-            mainMenu.AddItem(about);
-
-            modMenuPool.RefreshIndex();
-
-            // Init events
-            mainMenu.OnItemSelect += onMainMenuItemSelect;
-        }
-
-
-
-        // EVENTS //
         #region EVENTS
         public void OnTick(object sender, EventArgs e)
         {
@@ -102,9 +66,6 @@ namespace CustomPlayer_UserInterface
 
             if (modMenuPool != null)
                 modMenuPool.ProcessMenus();
-
-            
-
         }
 
         public void OnKeyDown(object sender, KeyEventArgs e)
@@ -131,7 +92,7 @@ namespace CustomPlayer_UserInterface
             UpdateLoadMenu();
 
 
-            if (item == saveCharacter)
+            if (item == UIsaveCharacter)
             {
                 string inputText = UIModel.getUserInput();
                 UIModel.saveCharacter(inputText);
@@ -148,7 +109,40 @@ namespace CustomPlayer_UserInterface
 
 
 
-        // LOAD MENU //
+        public UICustomPlayer()
+        {
+            // Init mod's classes
+            UIModel = new UIModel();
+            UIModel.playerChangedNotify += PlayerHasBeenChanged;
+
+            // Setup the menu and menu's UI
+            modMenuPool = new MenuPool();
+            mainMenu = new UIMenu("Custom Player", "Select an opinion");
+            modMenuPool.Add(mainMenu);
+
+
+
+            // Init buttons
+
+            SubMenuCharactersListSetup();
+
+            UIsaveCharacter = new UIMenuItem("Save", "Save your current character in the collection.");
+            mainMenu.AddItem(UIsaveCharacter);
+
+            ClothingMenuItems = new List<UIMenuComponents>();
+            SubMenuCustomizeSetup();
+
+            about = new UIMenuItem("About", "Mod information.");
+            mainMenu.AddItem(about);
+
+            modMenuPool.RefreshIndex();
+
+            // Init events
+            mainMenu.OnItemSelect += onMainMenuItemSelect;
+        }
+
+
+        
         #region LOAD
         void LoadMenuInit()
         {
@@ -173,6 +167,7 @@ namespace CustomPlayer_UserInterface
             UILoadMenu.AddItem(UILoadDefaultPlayer);
         }
 
+
         void UpdateLoadMenu()
         {
             // If true, to do rebuilding of the menu
@@ -185,6 +180,7 @@ namespace CustomPlayer_UserInterface
                 }
             }     
         }
+
 
         void SubMenuCharactersListSetup()
         {
@@ -222,21 +218,21 @@ namespace CustomPlayer_UserInterface
         #endregion
 
 
-
-        // CUSTOMIZE MENU //
+        
         #region CUSTOMIZE
+
+        // EVENTS //
         int FindComponentID(UIMenu desired)
         {
             foreach (var element in ClothingMenuItems)
             {
                 if (element.instance == desired)
                 {
-                    return element.TitleToInt;
+                    return element.TitleToCharatcerComponentID;
                 }
             }
             return 0;
         }
-
 
         void setTexture(UIMenuListItem sender, int newIndex)
         {
@@ -247,6 +243,8 @@ namespace CustomPlayer_UserInterface
         {
             UIModel.setDrawableID(FindComponentID(sender.Parent), sender.IndexToItem(newIndex));
         }
+        //--------------------------------------------------------//
+
 
 
         // CLOTHING MENU //
@@ -290,7 +288,6 @@ namespace CustomPlayer_UserInterface
                     submenu.AddItem(UIListInSubMenu);
                 }
                 
-
                 componentsIDs.Clear();
             }
 
@@ -301,6 +298,7 @@ namespace CustomPlayer_UserInterface
             SubmenuAddTo.BindMenuToItem(submenu, _UIMenuItem);
         }
 
+
         void ClothingMenuSetup()
         {
             // Add submenus with elements
@@ -309,6 +307,7 @@ namespace CustomPlayer_UserInterface
                 ClothingMenuInit(UIclothingMenu, pair);
             }
         }
+
 
         void UpdateClothingMenu()
         {
@@ -330,7 +329,7 @@ namespace CustomPlayer_UserInterface
                 for (int it = 0; it < NumberOfLists; ++it)
                 {
                     // Add a list of components IDs to the submenu
-                    NumberOfID = UIModel.getNumberOfComponents[it](ClothingMenuItems[i].TitleToInt);
+                    NumberOfID = UIModel.getNumberOfComponents[it](ClothingMenuItems[i].TitleToCharatcerComponentID);
                     for (int num = 0; num < NumberOfID; num++)
                     {
                         componentsIDs.Add(num);
@@ -339,7 +338,7 @@ namespace CustomPlayer_UserInterface
                     if (componentsIDs.Count > 1)
                     {
                         // Create UI list  
-                        UIMenuListItem UIList = new UIMenuListItem(NamesOfLists[it], componentsIDs, UIModel.getCurrentID[it](ClothingMenuItems[i].TitleToInt));
+                        UIMenuListItem UIList = new UIMenuListItem(NamesOfLists[it], componentsIDs, UIModel.getCurrentID[it](ClothingMenuItems[i].TitleToCharatcerComponentID));
 
                         // Set events
                         if (it == 0)
@@ -386,11 +385,11 @@ namespace CustomPlayer_UserInterface
 
         void SubMenuCustomizeSetup()
         {
-            customizeMenu = modMenuPool.AddSubMenu(mainMenu, "Customize");
+            UIcustomizeMenu = modMenuPool.AddSubMenu(mainMenu, "Customize");
 
 
             // VOICE MENU //
-            UIMenu UIvoiceMenu = modMenuPool.AddSubMenu(customizeMenu, "Voice", "Change character's voice.");
+            UIMenu UIvoiceMenu = modMenuPool.AddSubMenu(UIcustomizeMenu, "Voice", "Change character's voice.");
             UIvoiceMenu.SetMenuWidthOffset(100);
 
 
@@ -419,7 +418,7 @@ namespace CustomPlayer_UserInterface
 
 
             // CLOTHING MENU //
-            UIclothingMenu = modMenuPool.AddSubMenu(customizeMenu, "Clothing", "Change the clothes of the model, if she has one");
+            UIclothingMenu = modMenuPool.AddSubMenu(UIcustomizeMenu, "Clothing", "Change the clothes of the model, if she has one");
             ClothingMenuSetup();
         }
         #endregion
