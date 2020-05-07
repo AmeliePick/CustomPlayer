@@ -3,7 +3,7 @@ using NativeUI;
 using System;
 using System.Collections.Generic;
 using CustomPlayer_UserInterfaceModel;
-
+using CustomPlayerGlobal;
 
 namespace CustomPlayer_UserInterface
 {
@@ -55,65 +55,16 @@ namespace CustomPlayer_UserInterface
 
         List<UIMenuComponents> ClothingMenuItems;
 
+        
         //---------------------------------------//
         
         
-
-        #region EVENTS
-        public void OnTick(object sender, EventArgs e)
-        {
-            UIModel.OnTick(sender, e);
-
-            if (modMenuPool != null)
-                modMenuPool.ProcessMenus();
-        }
-
-        public void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.F10 && !modMenuPool.IsAnyMenuOpen())
-            {
-                mainMenu.Visible = !mainMenu.Visible;
-            }
-        }
-
-        private void PlayerHasBeenChanged()
-        {
-            UpdateClothingMenu();
-        }
-
-
-
-        void onMainMenuItemSelect(UIMenu sender, UIMenuItem item, int index)
-        {
-            /* In addition to updating the menu, there may be a "late" initialization of the "Load" menu. 
-             * This is due to the fact that the first time you run the script, 
-             * there may not be a file with saved characters.
-             */
-            UpdateLoadMenu();
-
-
-            if (item == UIsaveCharacter)
-            {
-                string inputText = UIModel.getUserInput();
-                UIModel.saveCharacter(inputText);
-
-                GTA.UI.ShowSubtitle(UIModel.output);
-            }
-            else if (item == about)
-            {
-                BigMessageThread.MessageInstance.ShowSimpleShard("Custom Player",
-                "Developed by AmeliePick — https://ameliepick.ml");
-            }
-        }
-        #endregion
-
-
-
+        
         public UICustomPlayer()
         {
             // Init mod's classes
             UIModel = new UIModel();
-            UIModel.playerChangedNotify += PlayerHasBeenChanged;
+            PlayerChangedEvent.AddHandler(isPlayerChanged);
 
             // Setup the menu and menu's UI
             modMenuPool = new MenuPool();
@@ -142,7 +93,52 @@ namespace CustomPlayer_UserInterface
         }
 
 
-        
+
+        #region EVENTS
+        public void OnTick(object sender, EventArgs e)
+        {
+            UIModel.OnTick(sender, e);
+
+            if (modMenuPool != null)
+                modMenuPool.ProcessMenus();
+        }
+
+
+        public void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F10 && !modMenuPool.IsAnyMenuOpen())
+            {
+                mainMenu.Visible = !mainMenu.Visible;
+            }
+        }
+
+
+        public void isPlayerChanged()
+        {
+            UpdateClothingMenu();
+        }
+
+
+
+        void onMainMenuItemSelect(UIMenu sender, UIMenuItem item, int index)
+        {
+            if (item == UIsaveCharacter)
+            {
+                string inputText = UIModel.getUserInput();
+                UIModel.saveCharacter(inputText);
+
+                GTA.UI.ShowSubtitle(UIModel.output);
+            }
+            else if (item == about)
+            {
+                BigMessageThread.MessageInstance.ShowSimpleShard("Custom Player",
+                "Developed by AmeliePick — https://ameliepick.ml");
+            }
+        }
+        #endregion
+
+
+
         #region LOAD
         void LoadMenuInit()
         {
@@ -205,6 +201,12 @@ namespace CustomPlayer_UserInterface
                 {
                     UIModel.loadCharacter(UIModel.listOfCharactersNames[UICharactersList.Index]);
 
+                    /* In addition to updating the menu, there may be a "late" initialization of the "Load" menu. 
+                     * This is due to the fact that the first time you run the script, 
+                     * there may not be a file with saved characters.
+                     */
+                    UpdateLoadMenu();
+
                     GTA.UI.ShowSubtitle(UIModel.output);
                 }
                 else if (item == UILoadDefaultPlayer)
@@ -234,10 +236,12 @@ namespace CustomPlayer_UserInterface
             return 0;
         }
 
+
         void setTexture(UIMenuListItem sender, int newIndex)
         {
             UIModel.setTextureID(FindComponentID(sender.Parent), sender.IndexToItem(newIndex));
         }
+
 
         void setDrawable(UIMenuListItem sender, int newIndex)
         {
@@ -245,9 +249,9 @@ namespace CustomPlayer_UserInterface
         }
         //--------------------------------------------------------//
 
-
-
-        // CLOTHING MENU //
+        
+        
+        
         #region CLOTHING
         void ClothingMenuInit(UIMenu SubmenuAddTo, KeyValuePair<string, int> bodyPart)
         {
@@ -382,6 +386,8 @@ namespace CustomPlayer_UserInterface
             }
         }
         #endregion
+
+
 
         void SubMenuCustomizeSetup()
         {

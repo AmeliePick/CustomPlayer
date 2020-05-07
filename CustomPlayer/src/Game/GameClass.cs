@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 using GTAN = GTA.Native.Function;
 
+using CustomPlayerGlobal;
 
 
 namespace CustomPlayer
@@ -31,8 +32,6 @@ namespace CustomPlayer
 
 
     
-
-
     class GameClass
     {
         private SaveClass saveClass { get; }
@@ -41,16 +40,22 @@ namespace CustomPlayer
 
         public Player player;
         public Ped playerPed;
+        int modelHash;
 
-        GamePlayer PlayerToSave;
+        GamePlayer playerToSave;
 
 
+        //--------------------------------------------------//
+
+        
+        
         public GameClass()
         {
             player = new Player(Game.Player.Handle);
             playerPed = new Ped(GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Handle);
+            modelHash = playerPed.Model.Hash;
 
-            PlayerToSave = new GamePlayer("", "");
+            playerToSave = new GamePlayer("", "");
 
             saveClass = new SaveClass();
             loadClass = new LoadClass(player.Character.Model);
@@ -58,33 +63,41 @@ namespace CustomPlayer
 
 
 
+        #region EVENTS
         public void OnTick(object sender, EventArgs e)
         {
             if (Game.Player.IsDead && Game.Player.Character.Model.Hash != -1692214353 && Game.Player.Character.Model.Hash != 225514697 && Game.Player.Character.Model.Hash != -1686040670)
-            {
                 LoadDefaultPlayer();
+
+            if (modelHash != GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Model.Hash)
+            {
+                modelHash = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Model.Hash;
+                PlayerChangedEvent.playerHasBeenChanged();
             }
         }
+        #endregion
 
 
 
         public void saveCharacter(string CharacterName)
         {
-            PlayerToSave.Name = CharacterName;
-            if(PlayerToSave.Voice == "")
+            playerToSave.Name = CharacterName;
+            if(playerToSave.Voice == "")
             {
-                if      (playerPed.Model.Hash == -1692214353) PlayerToSave.Voice = "FRANKLIN_NORMAL";
-                else if (playerPed.Model.Hash == 225514697)   PlayerToSave.Voice = "MICHAEL_NORMAL";
-                else if (playerPed.Model.Hash == -1686040670) PlayerToSave.Voice = "TREVOR_NORMAL";
+                if      (playerPed.Model.Hash == -1692214353) playerToSave.Voice = "FRANKLIN_NORMAL";
+                else if (playerPed.Model.Hash == 225514697)   playerToSave.Voice = "MICHAEL_NORMAL";
+                else if (playerPed.Model.Hash == -1686040670) playerToSave.Voice = "TREVOR_NORMAL";
             }
 
-            saveClass.saveCharacter(PlayerToSave);
+            saveClass.saveCharacter(playerToSave);
         }
 
 
         public void LoadDefaultPlayer()
         {
             loadClass.LoadDefaultPlayer();
+
+            PlayerChangedEvent.playerHasBeenChanged();
         }
 
 
@@ -94,12 +107,16 @@ namespace CustomPlayer
             if(isLoaded)
             {
                 this.playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
+                PlayerChangedEvent.playerHasBeenChanged();
             }
 
             return isLoaded;
         }
 
 
+        //--------------------------------------------------//
+
+        
         public void PlaySpeechByPlayer(string voice)
         {
             if(!GTAN.Call<bool>(Hash.IS_AMBIENT_SPEECH_PLAYING, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX)))
@@ -109,7 +126,7 @@ namespace CustomPlayer
 
         public void SetNewVoice(string voiceName)
         {
-            this.playerPed.Voice = PlayerToSave.Voice = voiceName;
+            this.playerPed.Voice = playerToSave.Voice = voiceName;
         }
 
 
@@ -129,6 +146,9 @@ namespace CustomPlayer
 
             return voiceList;
         }
+
+
+        //--------------------------------------------------//
 
 
         public int getCurrentDrawableID(int componentId)
@@ -165,13 +185,15 @@ namespace CustomPlayer
 
         public void setDrawableID(int componentId, int value)
         {
-            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), componentId, value, getCurrentTextureID(componentId), 2);
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                      componentId, value, getCurrentTextureID(componentId), 2);
         }
 
 
         public void setTextureID(int componentId, int value)
         {
-            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), componentId, getCurrentDrawableID(componentId), value, 2);
+            GTAN.Call(Hash.SET_PED_COMPONENT_VARIATION, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX),
+                      componentId, getCurrentDrawableID(componentId), value, 2);
         }
     }
 }
