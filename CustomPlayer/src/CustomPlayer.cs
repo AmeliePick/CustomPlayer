@@ -28,7 +28,20 @@ namespace CustomPlayer
         UICustomPlayer UICustomPlayer;
 
 
-        // EVENTS //
+        //----------------------------------------//
+
+
+        public CustomPlayer()
+        {
+            UICustomPlayer = new UICustomPlayer();
+
+            // Init events
+            KeyDown += OnKeyDown;
+            Tick += OnTick;
+        }
+
+
+
         #region EVENTS
         void OnTick(object sender, EventArgs e)
         {
@@ -46,15 +59,5 @@ namespace CustomPlayer
             }
         }
         #endregion
-
-
-        public CustomPlayer()
-        {
-            UICustomPlayer = new UICustomPlayer();
-
-            // Init events
-            KeyDown += OnKeyDown;
-            Tick += OnTick;
-        }
     }
 }

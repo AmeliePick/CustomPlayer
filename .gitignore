@@ -1,14 +1,12 @@
-# .gitignore for Grand Stronghold project
+# .gitignore for Custom Player project
 
 
 .vs/
 .vscode/
 
-CustomPlayer/obj/x64
-CustomPlayer/bin
-CustomPlayer_Vi/obj/x64
-CustomPlayer_Vi/bin
-src/Debug
+Debug/
+Release/
+obj/
 bin/
 build/
 
