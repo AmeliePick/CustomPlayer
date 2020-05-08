@@ -35,7 +35,7 @@ There you can change a clothing of your hero. For this your need to choose a com
 [![Watch the video](https://img.youtube.com/vi/zQGSEDtP94s/maxresdefault.jpg)](https://youtu.be/zQGSEDtP94s)
 
 ___
-![Warning](screenshots/warning.png)
+![Warning](screenshots/Warning.png)
 + If you using an add-on model and you will save game with no default model like Franklin or Michael or Trevor, your save gonna be broken and it can lead to crash or infinity loading.
 
 + Also when your add-on character is dying, the mod would replace current model to the model which that was during the launch of GTA V. This will save you endless loading.
