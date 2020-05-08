@@ -1,26 +1,43 @@
-# This is Grand Theft Auto V script
+![Logo](screenshots/Logo.png)
+
+![GitHub All Releases](https://img.shields.io/github/downloads/AmeliePick/CustomPlayer/total?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/AmeliePick/CustomPlayer?style=for-the-badge)
+
+# About Custom Player
+Custom Player (or CustomPlayer) is a mod for Grand Theft Auto V. With help of this mod you can change some things of your character: clothing and voice. Also you can save and load your customized hero. This mod has an intuitive user interface by NativeUI library.
+
+
+# Overview
+## Main Menu
+![MainMenu](screenshots/MainMenu.jpg)
+
+## Load Menu
+![LoadMenu](screenshots/LoadMenu.jpg)
+
+This is a menu of a character loading. If you have have a saved character already, there will be a list of your characters.
+
+## Saving
+![SavingMenu](screenshots/Saving.jpg)
+
+To save your hero, you just need to type a name of character's suit or something like that.
+
+## Voice menu
+![VoiceMenu](screenshots/VoiceMenu.jpg)
+
+In this menu you can choose a voice for your character, listen it and apply new voice.
+
+## Clothing Menu
+![ClothingMenu](screenshots/ClothingMenu.jpg)
+
+There you can change a clothing of your hero. For this your need to choose a component and you can change drawable things and textures of them.
+
+## Video
+[![Watch the video](https://img.youtube.com/vi/zQGSEDtP94s/maxresdefault.jpg)](https://youtu.be/zQGSEDtP94s)
+
 ___
-## Description
-This mod would be usefull, if u have a V model by [alex189](https://www.gta5-mods.com/users/alex189?fbclid=IwAR1TaGXscI_5Uo4tROwRwQ14tUxYOw7nqhUEsavLxW3141DR0_aXk3vfLno).
-The mod changing some character's parameters like voice, animation and clothes.
+![Warning](screenshots/warning.png)
++ If you using an add-on model and you will save game with no default model like Franklin or Michael or Trevor, your save gonna be broken and it can lead to crash or infinity loading.
 
-After the using the mod, the model will be have that view
-![V](screenshots/V.jpg)
++ Also when your add-on character is dying, the mod would replace current model to the model which that was during the launch of GTA V. This will save you endless loading.
 
-___
-
-## Requirements
-1) ScriptHookV - [Download](http://dev-c.com/gta/scripthookv)
-2) ScriptHookVDotNet - [Download](https://github.com/crosire/scripthookvdotnet/releases)
-
-## Installation
-1) You must to have that model. It can download from the [SITE](https://www.gta5-mods.com/player/cyberpunk-custom-female-ped-add-on-ped-replace), and add the model to GTA V. See an [INSTRUCTION](https://www.gta5-mods.com/scripts/addonpeds-asi-pedselector).
-3) Move a CustomPlayer_Vi.dll to "rootGTAVFolder/scripts/". If you don't have that folder, just create it.
-4) Well done!
-
-## Control
-K - click on the button to customize V or return initial model.
-
-
-## Warning !
-If you will save game with non default model, its lead to crash the game when you start GTA V again or make your save game to trash.
++ And also, for some add-on models clothing components can be swapped. For example gloves can be changed through the "Legs" menu. These are the features of the add-on models.

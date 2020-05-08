@@ -191,7 +191,7 @@ namespace CustomPlayer_UserInterface
 
         void SubMenuCharactersListSetup()
         {
-            this.UILoadMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current player character to a saved character.");
+            this.UILoadMenu = modMenuPool.AddSubMenu(mainMenu, "Load", "Change your current character to the saved one.");
 
 
             UpdateLoadMenu();
@@ -407,21 +407,21 @@ namespace CustomPlayer_UserInterface
 
             // VOICE MENU //
 
-            UIMenuItem UIvoiceMenu = new UIMenuItem("Voice", "Change character's voice.");
+            UIMenuItem UIvoiceMenu = new UIMenuItem("Voice", "Change the character's voice.");
             UIcustomizeMenu.AddItem(UIvoiceMenu);
 
             UIMenu UIVoiceSubmenu = new UIMenu(UIvoiceMenu.Text, UIvoiceMenu.Text);
             UIVoiceSubmenu.SetMenuWidthOffset(170);
 
             
-            UIMenuListItem voiceChangeList = new UIMenuListItem("", UIModel.voiceList, 0, "Change character's voice.");
+            UIMenuListItem voiceChangeList = new UIMenuListItem("", UIModel.voiceList, 0, "Change the character's voice.");
             UIVoiceSubmenu.AddItem(voiceChangeList);
 
 
             UIMenuItem voiceTest = new UIMenuItem("Test the voice", "The player will say the phrase in the selected voice.");
             UIVoiceSubmenu.AddItem(voiceTest);
 
-            UIMenuItem applyNewVoice = new UIMenuItem("Apply", "Set to your character the selected vocie.");
+            UIMenuItem applyNewVoice = new UIMenuItem("Apply", "Set to your character the selected voice.");
             UIVoiceSubmenu.AddItem(applyNewVoice);
 
 
@@ -447,7 +447,7 @@ namespace CustomPlayer_UserInterface
 
 
             // CLOTHING MENU //
-            UIclothingMenu = modMenuPool.AddSubMenu(UIcustomizeMenu, "Clothing", "Change the clothes of the model, if she has one");
+            UIclothingMenu = modMenuPool.AddSubMenu(UIcustomizeMenu, "Clothing", "Change the clothes of the model, if it has one");
             ClothingMenuSetup();
         }
         #endregion
