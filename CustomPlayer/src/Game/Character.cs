@@ -173,17 +173,20 @@ namespace CustomPlayer
 
         public static bool isPlayerAlreadyExist(string CharacterName)
         {
-            XDocument xdoc = Parser.OpenFile("scripts/CustomPlayer/characters.xml");
-
-            foreach (XElement personElement in xdoc.Element("Characters").Elements("person"))
+            if (File.Exists("scripts/CustomPlayer/characters.xml"))
             {
+                XDocument xdoc = Parser.OpenFile("scripts/CustomPlayer/characters.xml");
 
-                if (personElement.Attribute("name").Value == CharacterName)
+                foreach (XElement personElement in xdoc.Element("Characters").Elements("person"))
                 {
-                    return true;
+
+                    if (personElement.Attribute("name").Value == CharacterName)
+                    {
+                        return true;
+                    }
                 }
             }
-
+            
             return false;
         }
     }
