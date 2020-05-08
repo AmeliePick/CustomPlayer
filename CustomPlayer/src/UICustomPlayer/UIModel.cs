@@ -71,6 +71,11 @@ namespace CustomPlayer_UserInterfaceModel
         #endregion
 
 
+        public bool isDefaultPlayer()
+        {
+            return game.isDefaultPlayer();
+        }
+
 
         /// <summary>
         /// Performs the list update.
@@ -108,9 +113,11 @@ namespace CustomPlayer_UserInterfaceModel
         {
             if (CharacterName != "")
             {
-                game.saveCharacter(CharacterName);
+                bool isSaved = game.saveCharacter(CharacterName);
 
-                output = "Done!";
+                if (isSaved)
+                    output = "Done!";
+                else output = "The player with the same name already exists.";
             }
             else
                 output = "Name can not be empty!";
@@ -119,20 +126,16 @@ namespace CustomPlayer_UserInterfaceModel
 
         public void loadCharacter(string CharacterName)
         {
-            bool checkLoad = game.LoadCharacter(CharacterName);
+            bool checkLoad = game.loadCharacter(CharacterName);
 
-            if (checkLoad)
-            {
-                output = "Character was loaded";
-            }         
-            else
-                output = "Character was not loaded";
+            if (checkLoad) output = "Character was loaded";
+            else output = "Character was not loaded";
         }
 
 
         public void loadDefaultCharacter()
         {
-            game.LoadDefaultPlayer();
+            game.loadDefaultPlayer();
         }
 
 
@@ -156,13 +159,13 @@ namespace CustomPlayer_UserInterfaceModel
 
         public void playSpeechByPlayer(string voice)
         {
-            game.PlaySpeechByPlayer(voice);
+            game.playSpeechByPlayer(voice);
         }
 
 
         public void setNewVoice(string voiceName)
         {
-            game.SetNewVoice(voiceName);
+            game.setNewVoice(voiceName);
         }
     }
 }

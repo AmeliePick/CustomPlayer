@@ -65,6 +65,7 @@ namespace CustomPlayer_UserInterface
             // Init mod's classes
             UIModel = new UIModel();
             PlayerChangedEvent.AddHandler(isPlayerChanged);
+            PlayerSavedEvent.AddHandler(isPlayerSaved);
 
             // Setup the menu and menu's UI
             modMenuPool = new MenuPool();
@@ -113,9 +114,19 @@ namespace CustomPlayer_UserInterface
         }
 
 
-        public void isPlayerChanged()
+        private void isPlayerChanged()
         {
             UpdateClothingMenu();
+            updateVoiceMenu();
+        }
+
+        private void isPlayerSaved()
+        {
+            /* In addition to updating the menu, there may be a "late" initialization of the "Load" menu. 
+             * This is due to the fact that the first time you run the script, 
+             * there may not be a file with saved characters.
+             */
+            UpdateLoadMenu();
         }
 
 
@@ -188,7 +199,6 @@ namespace CustomPlayer_UserInterface
 
             if (UIModel.listOfCharactersNames.Count == 0)
             {
-
                 UILoadMenuEmptyButton = new UIMenuItem("", "You have no saved characters yet.");
                 UILoadMenu.AddItem(UILoadMenuEmptyButton);
             }
@@ -200,12 +210,6 @@ namespace CustomPlayer_UserInterface
                 if (item == UILoadCharacter)
                 {
                     UIModel.loadCharacter(UIModel.listOfCharactersNames[UICharactersList.Index]);
-
-                    /* In addition to updating the menu, there may be a "late" initialization of the "Load" menu. 
-                     * This is due to the fact that the first time you run the script, 
-                     * there may not be a file with saved characters.
-                     */
-                    UpdateLoadMenu();
 
                     GTA.UI.ShowSubtitle(UIModel.output);
                 }
@@ -388,6 +392,13 @@ namespace CustomPlayer_UserInterface
         #endregion
 
 
+        void updateVoiceMenu()
+        {
+            if (UIModel.isDefaultPlayer())
+                UIcustomizeMenu.MenuItems[0].Enabled = false;
+            else UIcustomizeMenu.MenuItems[0].Enabled = true;
+        }
+
 
         void SubMenuCustomizeSetup()
         {
@@ -395,22 +406,26 @@ namespace CustomPlayer_UserInterface
 
 
             // VOICE MENU //
-            UIMenu UIvoiceMenu = modMenuPool.AddSubMenu(UIcustomizeMenu, "Voice", "Change character's voice.");
-            UIvoiceMenu.SetMenuWidthOffset(100);
 
+            UIMenuItem UIvoiceMenu = new UIMenuItem("Voice", "Change character's voice.");
+            UIcustomizeMenu.AddItem(UIvoiceMenu);
 
+            UIMenu UIVoiceSubmenu = new UIMenu(UIvoiceMenu.Text, UIvoiceMenu.Text);
+            UIVoiceSubmenu.SetMenuWidthOffset(170);
+
+            
             UIMenuListItem voiceChangeList = new UIMenuListItem("", UIModel.voiceList, 0, "Change character's voice.");
-            UIvoiceMenu.AddItem(voiceChangeList);
+            UIVoiceSubmenu.AddItem(voiceChangeList);
 
 
             UIMenuItem voiceTest = new UIMenuItem("Test the voice", "The player will say the phrase in the selected voice.");
-            UIvoiceMenu.AddItem(voiceTest);
+            UIVoiceSubmenu.AddItem(voiceTest);
 
             UIMenuItem applyNewVoice = new UIMenuItem("Apply", "Set to your character the selected vocie.");
-            UIvoiceMenu.AddItem(applyNewVoice);
+            UIVoiceSubmenu.AddItem(applyNewVoice);
 
 
-            UIvoiceMenu.OnItemSelect += (sender, item, index) =>
+            UIVoiceSubmenu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == voiceTest)
                 {
@@ -421,6 +436,14 @@ namespace CustomPlayer_UserInterface
                     UIModel.setNewVoice(UIModel.voiceList[voiceChangeList.Index]);
                 }
             };
+
+
+            if (UIModel.isDefaultPlayer())
+                UIvoiceMenu.Enabled = false;
+
+            UIcustomizeMenu.BindMenuToItem(UIVoiceSubmenu, UIvoiceMenu);
+            modMenuPool.Add(UIVoiceSubmenu);
+            
 
 
             // CLOTHING MENU //
