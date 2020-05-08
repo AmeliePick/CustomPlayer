@@ -170,5 +170,21 @@ namespace CustomPlayer
 
             return null;
         }
+
+        public static bool isPlayerAlreadyExist(string CharacterName)
+        {
+            XDocument xdoc = Parser.OpenFile("scripts/CustomPlayer/characters.xml");
+
+            foreach (XElement personElement in xdoc.Element("Characters").Elements("person"))
+            {
+
+                if (personElement.Attribute("name").Value == CharacterName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

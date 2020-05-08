@@ -54,11 +54,14 @@ namespace CustomPlayer
             player = new Player(Game.Player.Handle);
             playerPed = new Ped(GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Handle);
             modelHash = playerPed.Model.Hash;
-
+            
             playerToSave = new GamePlayer("", "");
+
 
             saveClass = new SaveClass();
             loadClass = new LoadClass(player.Character.Model);
+
+            PlayerChangedEvent.AddHandler(updatePlayerAndPed);
         }
 
 
@@ -67,47 +70,56 @@ namespace CustomPlayer
         public void OnTick(object sender, EventArgs e)
         {
             if (Game.Player.IsDead && Game.Player.Character.Model.Hash != -1692214353 && Game.Player.Character.Model.Hash != 225514697 && Game.Player.Character.Model.Hash != -1686040670)
-                LoadDefaultPlayer();
+                loadDefaultPlayer();
 
             if (modelHash != GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Model.Hash)
             {
                 modelHash = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX).Model.Hash;
-                PlayerChangedEvent.playerHasBeenChanged();
+                PlayerChangedEvent.EventCall();
             }
+        }
+
+
+        void updatePlayerAndPed()
+        {
+            this.player = Game.Player;
+            this.playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX, player);
+            this.modelHash = playerPed.Model.Hash;
         }
         #endregion
 
 
 
-        public void saveCharacter(string CharacterName)
+        public bool saveCharacter(string CharacterName)
         {
             playerToSave.Name = CharacterName;
-            if(playerToSave.Voice == "")
-            {
-                if      (playerPed.Model.Hash == -1692214353) playerToSave.Voice = "FRANKLIN_NORMAL";
-                else if (playerPed.Model.Hash == 225514697)   playerToSave.Voice = "MICHAEL_NORMAL";
-                else if (playerPed.Model.Hash == -1686040670) playerToSave.Voice = "TREVOR_NORMAL";
-            }
 
-            saveClass.saveCharacter(playerToSave);
+            bool isSaved = saveClass.saveCharacter(playerToSave);
+
+            if (isSaved)
+            {
+                PlayerSavedEvent.EventCall();
+                return true;
+            }
+            else return false;
         }
 
 
-        public void LoadDefaultPlayer()
+        public void loadDefaultPlayer()
         {
             loadClass.LoadDefaultPlayer();
 
-            PlayerChangedEvent.playerHasBeenChanged();
+            PlayerChangedEvent.EventCall();
         }
 
 
-        public bool LoadCharacter(string CharacterName)
+        public bool loadCharacter(string CharacterName)
         {
             bool isLoaded = loadClass.LoadCharacter(CharacterName);
             if(isLoaded)
             {
                 this.playerPed = GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX);
-                PlayerChangedEvent.playerHasBeenChanged();
+                PlayerChangedEvent.EventCall();
             }
 
             return isLoaded;
@@ -117,14 +129,22 @@ namespace CustomPlayer
         //--------------------------------------------------//
 
         
-        public void PlaySpeechByPlayer(string voice)
+        public void playSpeechByPlayer(string voice)
         {
             if(!GTAN.Call<bool>(Hash.IS_AMBIENT_SPEECH_PLAYING, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX)))
                 GTAN.Call(Hash._PLAY_AMBIENT_SPEECH_WITH_VOICE, GTAN.Call<Ped>(Hash.GET_PLAYER_PED_SCRIPT_INDEX), "FIGHT", voice, "SPEECH_PARAMS_STANDARD", 0);
         }
 
 
-        public void SetNewVoice(string voiceName)
+        public bool isDefaultPlayer()
+        {
+            if (playerPed.Model.Hash == -1692214353 || playerPed.Model.Hash == 225514697 || playerPed.Model.Hash == -1686040670)
+                return true;
+            else return false;
+        }
+
+
+        public void setNewVoice(string voiceName)
         {
             this.playerPed.Voice = playerToSave.Voice = voiceName;
         }
