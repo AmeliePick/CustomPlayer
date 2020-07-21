@@ -102,7 +102,7 @@ namespace CustomPlayer_UserInterfaceModel
         /// </summary>
         public string getUserInput()
         {
-            return GTA.Game.GetUserInput(GTA.WindowTitle.FMMC_KEY_TIP9N, 60);
+            return GTA.Game.GetUserInput(GTA.WindowTitle.FMMC_KEY_TIP8, 30);
         }
 
 
